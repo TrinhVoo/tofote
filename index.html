@@ -121,6 +121,7 @@
         <div><label class="lbl" for="l-date">Date</label><input id="l-date" type="date" class="inp"></div>
         <div><span class="lbl">Skin / flare status</span><div id="l-skin" class="flex gap-1.5"></div><p id="l-skin-t" class="mt-1 text-xs text-stone-500">1 = clear · 5 = severe flare</p></div>
         <div><span class="lbl">Stress level</span><div id="l-stress" class="flex gap-1.5"></div><p id="l-stress-t" class="mt-1 text-xs text-stone-500">1 = calm · 5 = very stressed</p></div>
+        <div><span class="lbl">Sleep quality</span><div id="l-sleep" class="flex gap-1.5"></div><p id="l-sleep-t" class="mt-1 text-xs text-stone-500">1 = very poor · 5 = excellent</p></div>
       </div>
       <label class="lbl mt-3" for="l-meal">What did you eat? Any new allergens?</label>
       <textarea id="l-meal" rows="3" class="inp" placeholder="Breakfast, lunch, dinner, snacks, drinks…"></textarea>
@@ -423,7 +424,7 @@ const VI_UI = {
 'Histamine builds up as food sits':'Histamine tăng dần khi để lâu','Fish sauce counts too':'Nước mắm cũng tính','Wear gloves or rinse well':'Đeo găng hoặc tráng kỹ','Found in some moisturizers':'Có trong một số kem dưỡng ẩm',
 'Pillow / mattress filling':'Ruột gối / nệm','Fresh, not dried':'Tươi, không phải khô','Fresh only; confirm for yourself':'Chỉ dùng tươi; tự kiểm chứng',
 'What’s on your plate?':'Hôm nay bạn ăn gì?','How is your skin today?':'Da bạn hôm nay thế nào?','Gentle recipes':'Món ăn dịu nhẹ','Your trigger list':'Danh sách chất gây dị ứng','Backup':'Sao lưu','European':'Châu Âu',
-'How are you today?':'Hôm nay bạn thế nào?','Stress level':'Mức độ căng thẳng','1 = calm · 5 = very stressed':'1 = thư thái · 5 = rất căng thẳng','Stress':'Căng thẳng','Calm':'Thư thái','Low':'Thấp','High':'Cao','Very high':'Rất cao',
+'How are you today?':'Hôm nay bạn thế nào?','Stress level':'Mức độ căng thẳng','Sleep quality':'Chất lượng giấc ngủ','1 = very poor · 5 = excellent':'1 = rất kém · 5 = rất tốt','Very poor':'Rất kém','Poor':'Kém','Okay':'Tạm ổn','Good':'Tốt','Excellent':'Rất tốt','Sleep':'Giấc ngủ','1 = calm · 5 = very stressed':'1 = thư thái · 5 = rất căng thẳng','Stress':'Căng thẳng','Calm':'Thư thái','Low':'Thấp','High':'Cao','Very high':'Rất cao',
 'Add dishes from your recipes':'Thêm món từ thư viện công thức','Search your recipe library…':'Tìm trong thư viện công thức…','No matching recipe in your library.':'Không có công thức phù hợp trong thư viện.','Remove':'Bỏ',
 'Entry deleted':'Đã xóa nhật ký','Recipe deleted':'Đã xóa công thức','Hide recipes that contain:':'Ẩn công thức có chứa:','OK':'Đồng ý','Cancel':'Hủy','Name':'Tên',
 'Food & cosmetics scanner':'Quét thực phẩm & mỹ phẩm','Paste a food or cosmetic ingredient list, or describe a meal':'Dán danh sách thành phần thực phẩm hoặc mỹ phẩm, hoặc mô tả bữa ăn',
@@ -588,13 +589,14 @@ const rChip = (id, attr) => { const r = findR(id); return r ? `<span class="badg
 
 /* ---------- 2. Daily Log ---------- */
 const STRESS = ['Calm', 'Low', 'Moderate', 'High', 'Very high'];
+const SLEEP = ['Very poor', 'Poor', 'Okay', 'Good', 'Excellent'];
 const STRC = ['bg-[#F1E6EF] border-[#D9C3D4]','bg-[#E4D0E0] border-[#C9A9C2]','bg-[#D2B4CC] border-[#B48CAB]','bg-[#976D90] border-[#7A5273] text-white','bg-[#6B3F65] border-[#4F2A4A] text-white'];
-const PICK = {skin: {labels: SKIN, cls: SKINC}, stress: {labels: STRESS, cls: STRC}};
-const pickCap = (k, v) => v ? `${v} = ${T(PICK[k].labels[v - 1])}` : T(k === 'skin' ? '1 = clear · 5 = severe flare' : '1 = calm · 5 = very stressed');
+const PICK = {skin: {labels: SKIN, cls: SKINC}, stress: {labels: STRESS, cls: STRC}, sleep: {labels: SLEEP, cls: STRC}};   /* sleep uses the same colour code as stress */
+const pickCap = (k, v) => v ? `${v} = ${T(PICK[k].labels[v - 1])}` : T({skin: '1 = clear · 5 = severe flare', stress: '1 = calm · 5 = very stressed', sleep: '1 = very poor · 5 = excellent'}[k]);
 const pickerHTML = (k, val, scope) => PICK[k].labels.map((n, i) => `<button type="button" data-pk="${k}" data-v="${i + 1}" data-scope="${scope}" aria-label="${i + 1}: ${T(n)}" aria-pressed="${val === i + 1}" class="h-10 w-10 rounded-xl border-2 text-sm font-bold ${val === i + 1 ? 'border-[#432033] bg-[#432033] text-white' : PICK[k].cls[i]}">${i + 1}</button>`).join('');
-let logVals = {skin: 0, stress: 0}, logRecipes = [], editInline = null, edv = null;
+let logVals = {skin: 0, stress: 0, sleep: 0}, logRecipes = [], editInline = null, edv = null;
 const fmtDate = d => new Date(d + 'T00:00').toLocaleDateString(LANG === 'vi' ? 'vi-VN' : 'en-US', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'});
-function drawPickers() { ['skin', 'stress'].forEach(k => { $('l-' + k).innerHTML = pickerHTML(k, logVals[k], 'form'); $('l-' + k + '-t').textContent = pickCap(k, logVals[k]); }); }
+function drawPickers() { ['skin', 'stress', 'sleep'].forEach(k => { $('l-' + k).innerHTML = pickerHTML(k, logVals[k], 'form'); $('l-' + k + '-t').textContent = pickCap(k, logVals[k]); }); }
 const drawChips = () => { $('l-rchips').innerHTML = logRecipes.map(id => rChip(id, 'data-rdrop')).join(''); };
 /* one handler for every 1-5 picker, in the form and in an entry being edited; click again to clear */
 document.addEventListener('click', e => {
@@ -617,10 +619,10 @@ $('l-rq').oninput = $('l-rq').onfocus = recipeSearch;
 document.addEventListener('click', e => { if (!e.target.closest('#l-rq,#l-rres')) $('l-rres').innerHTML = ''; });
 $('l-rres').onclick = e => { const b = e.target.closest('[data-radd]'); if (!b) return; logRecipes.push(b.dataset.radd); $('l-rq').value = ''; $('l-rres').innerHTML = ''; drawChips(); liveWarn(); };
 $('l-rchips').onclick = e => { const b = e.target.closest('[data-rdrop]'); if (!b) return; logRecipes = logRecipes.filter(x => x !== b.dataset.rdrop); drawChips(); liveWarn(); };
-function resetLog() { logVals = {skin: 0, stress: 0}; logRecipes = []; $('l-date').value = today(); ['l-meal', 'l-notes', 'l-rq'].forEach(i => $(i).value = ''); $('l-rres').innerHTML = ''; $('l-warn').innerHTML = ''; drawPickers(); drawChips(); }
+function resetLog() { logVals = {skin: 0, stress: 0, sleep: 0}; logRecipes = []; $('l-date').value = today(); ['l-meal', 'l-notes', 'l-rq'].forEach(i => $(i).value = ''); $('l-rres').innerHTML = ''; $('l-warn').innerHTML = ''; drawPickers(); drawChips(); }
 $('l-save').onclick = () => {
-  const e = {id: uid(), date: $('l-date').value || today(), meal: $('l-meal').value.trim(), skin: logVals.skin, stress: logVals.stress, notes: $('l-notes').value.trim(), recipes: logRecipes.slice()};
-  if (!e.meal && !e.skin && !e.stress && !e.notes && !e.recipes.length) { toast('Add a meal, a skin rating or a note first.'); return; }
+  const e = {id: uid(), date: $('l-date').value || today(), meal: $('l-meal').value.trim(), skin: logVals.skin, stress: logVals.stress, sleep: logVals.sleep, notes: $('l-notes').value.trim(), recipes: logRecipes.slice()};
+  if (!e.meal && !e.skin && !e.stress && !e.sleep && !e.notes && !e.recipes.length) { toast('Add a meal, a skin rating or a note first.'); return; }
   S.log.push(e); calMonth = new Date(e.date.slice(0, 7) + '-01T00:00'); if (calSel !== e.date) calSel = null;
   const f = flagged(scan(mealText(e.meal, e.recipes)).hits); save(); resetLog(); renderLog();
   toast(f.length ? `${T('Saved. Flagged:')} ${f.map(dn).join(', ')}` : 'Entry saved');
@@ -628,7 +630,7 @@ $('l-save').onclick = () => {
 function readCard(e) {
   const {t, hits} = scan(e.meal || ''), f = flagged(scan(mealText(e.meal, e.recipes)).hits);
   return `<article class="card"><div class="flex flex-wrap items-center justify-between gap-2"><h3 class="font-bold">${esc(fmtDate(e.date))}</h3>
-    <div class="flex flex-wrap gap-1.5">${e.skin ? `<span class="badge ${SKINC[e.skin - 1]}">${T('Skin')} ${e.skin}/5 · ${T(SKIN[e.skin - 1])}</span>` : ''}${e.stress ? `<span class="badge ${STRC[e.stress - 1]}">${T('Stress')} ${e.stress}/5 · ${T(STRESS[e.stress - 1])}</span>` : ''}</div></div>
+    <div class="flex flex-wrap gap-1.5">${e.skin ? `<span class="badge ${SKINC[e.skin - 1]}">${T('Skin')} ${e.skin}/5 · ${T(SKIN[e.skin - 1])}</span>` : ''}${e.stress ? `<span class="badge ${STRC[e.stress - 1]}">${T('Stress')} ${e.stress}/5 · ${T(STRESS[e.stress - 1])}</span>` : ''}${e.sleep ? `<span class="badge ${STRC[e.sleep - 1]}">${T('Sleep')} ${e.sleep}/5 · ${T(SLEEP[e.sleep - 1])}</span>` : ''}</div></div>
     ${e.meal ? `<p class="mt-2 whitespace-pre-wrap text-sm">${hl(t, hits)}</p>` : ''}
     ${(e.recipes || []).length ? `<div class="mt-2 flex flex-wrap gap-1.5">${e.recipes.map(id => rChip(id)).join('')}</div>` : ''}
     ${f.length ? `<div class="mt-2 flex flex-wrap gap-1.5">${chips(f)}</div>` : ''}
@@ -639,7 +641,7 @@ function readCard(e) {
 function editCard(e) {
   const pk = (k, l) => `<div><span class="lbl">${l}</span><div class="flex gap-1.5">${pickerHTML(k, edv[k], 'edit')}</div><p class="mt-1 text-xs text-stone-500">${pickCap(k, edv[k])}</p></div>`;
   return `<article class="card tint-gild" data-ecard="${e.id}"><div class="grid gap-3 sm:grid-cols-2">
-    <div><span class="lbl">Date</span><input type="date" class="inp" data-f="date" value="${esc(edv.date)}" aria-label="Date"></div>${pk('skin', 'Skin / flare status')}${pk('stress', 'Stress level')}</div>
+    <div><span class="lbl">Date</span><input type="date" class="inp" data-f="date" value="${esc(edv.date)}" aria-label="Date"></div>${pk('skin', 'Skin / flare status')}${pk('stress', 'Stress level')}${pk('sleep', 'Sleep quality')}</div>
     <span class="lbl mt-3">What did you eat? Any new allergens?</span><textarea rows="3" class="inp" data-f="meal" aria-label="Name">${esc(edv.meal)}</textarea>
     <div class="mt-2 flex flex-wrap gap-2">${edv.recipes.map(id => rChip(id, 'data-edrop')).join('')}</div>
     <span class="lbl mt-3">Notes (sleep, stress, new soap, weather…)</span><textarea rows="2" class="inp" data-f="notes" aria-label="Notes">${esc(edv.notes)}</textarea>
@@ -655,11 +657,11 @@ function renderLog() {
 const grabEdit = () => { const c = document.querySelector('[data-ecard]'); if (c) c.querySelectorAll('[data-f]').forEach(i => edv[i.dataset.f] = i.value); };
 $('l-list').addEventListener('click', async ev => {
   const b = ev.target.closest('button'); if (!b) return; const d = b.dataset;
-  if (d.edit) { const e0 = S.log.find(x => x.id === d.edit); editInline = e0.id; edv = {date: e0.date, meal: e0.meal || '', notes: e0.notes || '', skin: e0.skin || 0, stress: e0.stress || 0, recipes: (e0.recipes || []).slice()}; renderLog(); }
+  if (d.edit) { const e0 = S.log.find(x => x.id === d.edit); editInline = e0.id; edv = {date: e0.date, meal: e0.meal || '', notes: e0.notes || '', skin: e0.skin || 0, stress: e0.stress || 0, sleep: e0.sleep || 0, recipes: (e0.recipes || []).slice()}; renderLog(); }
   else if (d.del) { if (await ui.confirm('Delete this entry?')) { S.log = S.log.filter(x => x.id !== d.del); if (editInline === d.del) { editInline = null; edv = null; } save(); renderLog(); toast('Entry deleted'); } }
   else if (d.edrop) { grabEdit(); edv.recipes = edv.recipes.filter(x => x !== d.edrop); renderLog(); }
   else if (d.ecancel) { editInline = null; edv = null; renderLog(); }
-  else if (d.esave) { grabEdit(); const e0 = S.log.find(x => x.id === editInline); Object.assign(e0, {date: edv.date || e0.date, meal: edv.meal.trim(), notes: edv.notes.trim(), skin: edv.skin, stress: edv.stress, recipes: edv.recipes}); editInline = null; edv = null; save(); renderLog(); toast('Entry saved'); }
+  else if (d.esave) { grabEdit(); const e0 = S.log.find(x => x.id === editInline); Object.assign(e0, {date: edv.date || e0.date, meal: edv.meal.trim(), notes: edv.notes.trim(), skin: edv.skin, stress: edv.stress, sleep: edv.sleep, recipes: edv.recipes}); editInline = null; edv = null; save(); renderLog(); toast('Entry saved'); }
 });
 
 /* ---------- Skin calendar: each day is coloured by the highest skin / flare rating logged that day ---------- */
