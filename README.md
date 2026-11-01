@@ -3,6 +3,9 @@
 **tofote** (tofu + note) is a bilingual (English / Vietnamese) diary for tracking food allergens, histamine triggers and skin flares. It is a single static page with no server, no account and no tracking.
 
 **Live demo:**
+<img width="1861" height="886" alt="image" src="https://github.com/user-attachments/assets/cf0540d0-9e1d-43af-9ff5-ff81f0d770c8" />
+<img width="1857" height="889" alt="image" src="https://github.com/user-attachments/assets/91707980-7e45-4525-ba04-4b8661c1b6d8" />
+<img width="1861" height="882" alt="image" src="https://github.com/user-attachments/assets/269b4c3a-d213-4885-84e2-f78d2be74a87" />
 
 ## Features
 
