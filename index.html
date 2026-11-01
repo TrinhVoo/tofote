@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>tofote – tofu note: allergen, histamine &amp; eczema diary</title>
+<script>
+  // Silences the Tailwind CDN production warning
+  tailwind = { config: { suppressDeprecationWarnings: true } };
+</script>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style type="text/tailwindcss">
+  :root{--eggplant:#432033;--rose:#EED4D1;--violet:#976D90;--rasp:#AF6384;--olive:#323C31;--ink:#2A1D26}
+  body{font-family:'DM Sans',system-ui,sans-serif;color:var(--ink);background:#FAF4F1}
+  .hero{font-weight:500;font-size:clamp(2.1rem,5.6vw,3.9rem);line-height:1.02;letter-spacing:-.025em;color:var(--ink);margin:.35rem 0 1.25rem}
+  /* flat pastel fills, tints of the palette */
+  .tint-mist{background:#E3D2E1} .tint-rose{background:#F1D3D0} .tint-gild{background:#F0CBD9} .tint-sage{background:#D3DBCB} .tint-lilac{background:#D9C5D9}
+  /* sidebar: a rounded misty-rose pill. Icons only; glides open on hover or keyboard focus */
+  .side-bg{background:rgba(238,212,209,.8)}
+  #bk>summary{list-style:none;cursor:pointer}#bk>summary::-webkit-details-marker{display:none}
+  #side .lbl-t{display:inline-block;max-width:0;padding-left:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .35s cubic-bezier(.4,0,.2,1),padding .35s cubic-bezier(.4,0,.2,1),opacity .2s ease}
+  #side .wm{font-size:.95rem;transition:font-size .35s cubic-bezier(.4,0,.2,1)}
+  .brand{display:flex;flex-direction:column;align-items:center;gap:.15rem}
+  .tag{max-height:0;opacity:0;overflow:hidden;text-align:center;transition:max-height .35s ease,opacity .25s ease,margin .35s ease}
+  @media(min-width:768px){
+    #side{transition:width .35s cubic-bezier(.4,0,.2,1)}
+    #side .tab,#side .btn-side{justify-content:flex-start;gap:0;padding:.75rem 0 .75rem .75rem;overflow:hidden;white-space:nowrap}
+    #side.open{width:13.5rem}
+    #side.open .lbl-t{max-width:9.5rem;padding-left:.75rem;opacity:1;transition-delay:0s,0s,.1s}
+    #side.open .wm{font-size:1.9rem}
+    #side.open .tag{max-height:3rem;opacity:1;margin-top:.5rem}
+  }
+  @media(prefers-reduced-motion:reduce){#side,#side *{transition:none!important}}
+  .lbl-s{display:block;font-size:10.5px;font-weight:600}
+  @media(min-width:768px){.lbl-s{display:none}}
+  @media(max-width:767px){
+    #side{bottom:max(.5rem,env(safe-area-inset-bottom));padding:.35rem .6rem;border-radius:9999px;gap:.15rem}
+    #side .tab{min-height:3rem;padding:.3rem .2rem;gap:.15rem;justify-content:center;border-radius:9999px}
+    #side .tab .lbl-t{display:none}
+    .lbl-s{font-size:10px;line-height:1.1}
+  }
+  #top-tools .lbl-t{display:none} #top-tools #lang-t{display:inline;padding-left:.4rem}
+  @media(max-width:767px){#bk-sub .lbl-t{display:inline;padding-left:.5rem}}
+  #bk-btn[aria-expanded=true]{background:#fff}
+  @layer components{
+    .card{@apply rounded-[1.75rem] bg-white/70 p-5}
+    .btn{@apply inline-flex items-center justify-center gap-1 rounded-full bg-[#432033] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#AF6384] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#AF6384]}
+    .btn2{@apply rounded-full border border-[#432033]/40 bg-white/50 px-4 py-2 text-sm font-semibold text-[#432033] hover:bg-white disabled:cursor-not-allowed}
+    .inp{@apply w-full rounded-2xl border border-transparent bg-white px-3.5 py-2.5 text-base md:text-sm focus:border-[#AF6384] focus:outline-none focus:ring-2 focus:ring-[#AF6384]/30}
+    .inp[type=search]{@apply rounded-full}
+    .tab{@apply flex flex-1 flex-col items-center gap-0.5 rounded-2xl px-1 py-2 md:rounded-full text-center text-[11px] font-semibold leading-tight text-[#432033] hover:bg-white/70 md:w-full md:flex-none md:flex-row md:gap-3 md:text-left md:text-sm}
+    .tab[aria-selected=true]{@apply bg-[#432033] text-white}
+    .lbl{@apply mb-1 block text-sm font-semibold}
+    .badge{@apply inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold}
+    .h2{@apply mb-3 text-xl font-bold text-[#2A1D26]}
+  }
+</style>
+</head>
+<body class="min-h-screen">
+<svg width="0" height="0" class="absolute" aria-hidden="true"><defs>
+<symbol id="tofu" viewBox="0 0 32 32"><g stroke="#432033" stroke-opacity=".5" stroke-width="1" stroke-linejoin="round"><path d="M16 4 28 10.5 16 17 4 10.5z" fill="#FFFBF0"/><path d="M4 10.5 16 17v12L4 22.5z" fill="#F1E4C6"/><path d="M28 10.5 16 17v12l12-6.5z" fill="#E6D4AF"/></g></symbol>
+<symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 5 5"/></symbol>
+<symbol id="i-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></symbol>
+<symbol id="i-recipes" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z"/><path d="M8 7c0-1.5 1-2 1-3.5M13 7c0-1.5 1-2 1-3.5"/></symbol>
+<symbol id="i-manage" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol><symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v10m0 0-4-4m4 4 4-4M5 19h14"/></symbol><symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V5m0 0-4 4m4-4 4 4M5 19h14"/></symbol></defs></svg>
+<div class="mx-auto flex max-w-6xl flex-col gap-4 p-3 md:flex-row md:gap-6 md:p-5">
+  <div class="md:w-[3.75rem] md:shrink-0">
+  <aside id="side" class="side-bg fixed inset-x-2 bottom-2 z-30 flex items-center gap-1 rounded-[2rem] p-2 shadow-lg md:sticky md:inset-auto md:top-5 md:h-auto md:w-[3.75rem] md:flex-col md:items-stretch md:gap-4 md:p-2">
+    <div class="hidden md:block"><div class="brand"><svg class="h-9 w-9 shrink-0" aria-hidden="true"><use href="#tofu"/></svg><span class="wm font-semibold tracking-tight text-[#432033]">tofote</span></div><p class="tag mt-2 text-xs leading-snug text-[#432033]/70">Allergen, low-histamine &amp; eczema diary</p></div>
+    <div role="tablist" class="flex flex-1 gap-1 md:flex-none md:flex-col">
+      <button class="tab" role="tab" data-tab="check" aria-label="Checker &amp; Scanner"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-check"/></svg><span class="lbl-t">Checker &amp; Scanner</span><span class="lbl-s">Search</span></button>
+      <button class="tab" role="tab" data-tab="log" aria-label="Daily Log"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-log"/></svg><span class="lbl-t">Daily Log</span><span class="lbl-s">Log</span></button>
+      <button class="tab" role="tab" data-tab="recipes" aria-label="Recipe Library"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-recipes"/></svg><span class="lbl-t">Recipe Library</span><span class="lbl-s">Recipes</span></button>
+      <button class="tab" role="tab" data-tab="manage" aria-label="Manage Allergens"><svg class="h-5 w-5" aria-hidden="true"><use href="#i-manage"/></svg><span class="lbl-t">Manage Allergens</span><span class="lbl-s">Triggers</span></button>
+    </div>
+    <div id="tools" class="flex items-center gap-2 md:mt-1 md:flex-col md:items-stretch">
+      <button id="lang" type="button" class="btn-side flex h-11 w-auto items-center justify-center gap-0 rounded-full bg-white/70 px-3 text-xs font-semibold text-[#432033] hover:bg-white md:h-auto md:w-full md:px-2 md:py-3" aria-label="Language / Ngôn ngữ"><svg class="h-5 w-5 shrink-0" aria-hidden="true"><use href="#i-globe"/></svg><span id="lang-t" class="lbl-t">English</span></button>
+      <div id="bk-wrap" class="relative flex flex-col gap-2">
+        <button id="bk-btn" type="button" aria-expanded="false" aria-controls="bk-sub" class="btn-side flex h-11 w-11 items-center justify-center gap-0 rounded-full bg-white/70 text-xs font-semibold text-[#432033] hover:bg-white md:h-auto md:w-full md:py-3" aria-label="Backup"><svg class="h-5 w-5 shrink-0" aria-hidden="true"><use href="#i-save"/></svg><span class="lbl-t">Backup</span></button>
+        <div id="bk-sub" class="absolute right-0 top-full z-40 mt-2 hidden w-max flex-col gap-1 rounded-3xl bg-[#EED4D1] p-2 shadow-lg md:static md:mt-0 md:w-full md:bg-transparent md:p-0 md:shadow-none">
+          <button id="exp" type="button" class="btn-side flex w-full items-center justify-start gap-0 rounded-full bg-white/80 px-3 py-2.5 text-sm font-semibold text-[#432033] hover:bg-white md:bg-white/70 md:text-xs" aria-label="Export backup"><svg class="h-5 w-5 shrink-0" aria-hidden="true"><use href="#i-save"/></svg><span class="lbl-t">Export backup</span></button>
+          <button id="imp" type="button" class="btn-side flex w-full items-center justify-start gap-0 rounded-full bg-white/80 px-3 py-2.5 text-sm font-semibold text-[#432033] hover:bg-white md:bg-white/70 md:text-xs" aria-label="Import backup"><svg class="h-5 w-5 shrink-0" aria-hidden="true"><use href="#i-upload"/></svg><span class="lbl-t">Import backup</span></button>
+        </div>
+      </div>
+      <input id="imp-file" type="file" accept="application/json,.json" class="hidden">
+    </div>
+  </aside>
+  </div>
+  <div class="min-w-0 flex-1 pb-28 md:pb-0">
+    <div class="flex items-center justify-between gap-2 md:hidden"><div class="flex items-center gap-2"><svg class="h-8 w-8" aria-hidden="true"><use href="#tofu"/></svg><span class="text-3xl font-semibold tracking-tight text-[#432033]">tofote</span></div><div id="top-tools" class="relative"></div></div>
+    <main class="space-y-4">
+
+  <!-- ========== 1. CHECKER & SCANNER ========== -->
+  <section id="p-check" class="tabp space-y-4">
+    <h2 class="hero">What’s on your plate?</h2>
+    <div class="card tint-mist">
+      <h2 class="h2">Search an ingredient or irritant</h2>
+      <input id="q" class="inp" type="search" placeholder="Try: tomato, dưa chua, lanolin, mủ gòn…" autocomplete="off">
+      <div id="q-out" class="mt-4 space-y-2"></div>
+    </div>
+    <div class="card tint-rose">
+      <h2 class="h2">Food &amp; cosmetics scanner</h2>
+      <label class="lbl" for="scan-in">Paste a food or cosmetic ingredient list, or describe a meal</label>
+      <textarea id="scan-in" rows="5" class="inp" placeholder="e.g. Rice noodles, tofu, tomato broth… or Aqua, Glycerin, Parfum, Linalool, Methylisothiazolinone…"></textarea>
+      <button id="scan-btn" class="btn mt-3">Scan for triggers</button>
+      <div id="scan-out" class="mt-4"></div>
+    </div>
+    <div id="legend" class="grid gap-2 sm:grid-cols-2"></div>
+  </section>
+
+  <!-- ========== 2. DAILY LOG ========== -->
+  <section id="p-log" class="tabp hidden space-y-4">
+    <h2 class="hero">How are you today?</h2>
+    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_19rem]">
+    <div class="min-w-0 space-y-4">
+    <div class="card tint-gild">
+      <h2 id="log-title" class="h2">Add a diary entry</h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div><label class="lbl" for="l-date">Date</label><input id="l-date" type="date" class="inp"></div>
+        <div><span class="lbl">Skin / flare status</span><div id="l-skin" class="flex gap-1.5"></div><p id="l-skin-t" class="mt-1 text-xs text-stone-500">1 = clear · 5 = severe flare</p></div>
+        <div><span class="lbl">Stress level</span><div id="l-stress" class="flex gap-1.5"></div><p id="l-stress-t" class="mt-1 text-xs text-stone-500">1 = calm · 5 = very stressed</p></div>
+      </div>
+      <label class="lbl mt-3" for="l-meal">What did you eat? Any new allergens?</label>
+      <textarea id="l-meal" rows="3" class="inp" placeholder="Breakfast, lunch, dinner, snacks, drinks…"></textarea>
+      <div class="mt-3 rounded-2xl border border-white/70 bg-white/50 p-3">
+        <label class="lbl" for="l-rq">Add dishes from your recipes</label>
+        <div class="relative"><input id="l-rq" type="search" class="inp pl-9" placeholder="Search your recipe library…" autocomplete="off"><svg class="pointer-events-none absolute left-3 top-2.5 h-5 w-5 text-stone-400" aria-hidden="true"><use href="#i-check"/></svg></div>
+        <div id="l-rres" class="mt-2 grid gap-2 sm:grid-cols-2"></div>
+        <div id="l-rchips" class="mt-2 flex flex-wrap gap-2"></div>
+      </div>
+      <div id="l-warn" class="mt-2"></div>
+      <label class="lbl mt-3" for="l-notes">Notes (sleep, stress, new soap, weather…)</label>
+      <textarea id="l-notes" rows="2" class="inp"></textarea>
+      <div class="mt-3 flex gap-2"><button id="l-save" class="btn">Save entry</button></div>
+    </div>
+    <details id="diary" class="card !bg-white/40">
+      <summary class="h2 mb-0 cursor-pointer"><span>Diary</span> <span id="diary-n" class="ml-1 text-sm font-medium text-stone-500"></span></summary>
+      <div id="l-filter" class="mt-3"></div>
+      <div id="l-list" class="mt-3 space-y-3"></div>
+    </details>
+    </div>
+    <aside class="order-first space-y-4 lg:sticky lg:top-5 lg:order-last lg:self-start">
+      <div class="card tint-mist !p-3 lg:!p-5">
+        <div class="mb-2 flex items-center justify-between gap-2">
+          <button id="cal-prev" type="button" class="grid h-9 w-9 place-items-center rounded-full bg-white/80 text-lg text-[#432033] hover:bg-white" aria-label="Previous month">‹</button>
+          <h2 id="cal-title" class="text-base font-bold capitalize"></h2>
+          <button id="cal-next" type="button" class="grid h-9 w-9 place-items-center rounded-full bg-white/80 text-lg text-[#432033] hover:bg-white" aria-label="Next month">›</button>
+        </div>
+        <div id="cal-grid" class="grid grid-cols-7 gap-1.5 text-center text-xs lg:gap-1"></div>
+        <p id="cal-stats" class="mt-2 text-xs lg:text-sm"></p>
+        <p class="lbl mt-3 !mb-1 text-sm">Skin trend this month</p>
+        <div id="cal-bars" class="flex h-20 items-end lg:h-28 gap-[2px] rounded-2xl bg-white/70 p-2"></div>
+        <div id="cal-legend" class="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] lg:mt-3 lg:text-[11px]"></div>
+      </div>
+      
+    </aside>
+    </div>
+  </section>
+
+  <!-- ========== 3. RECIPES ========== -->
+  <section id="p-recipes" class="tabp hidden space-y-4">
+    <h2 class="hero">Recipe Library</h2>
+    <details id="r-box" class="card tint-sage">
+      <summary class="h2 mb-0 cursor-pointer">Filters &amp; my own recipes</summary>
+      <p class="lbl mt-3">Hide recipes that contain:</p>
+      <div id="f-chips" class="flex flex-wrap gap-2"></div>
+      <details id="r-form" class="mt-4 rounded-2xl border border-white/70 bg-white/40 p-3">
+        <summary class="cursor-pointer text-sm font-semibold text-[#432033]">Save my own recipe</summary>
+        <div class="mt-3 space-y-3">
+          <div><label class="lbl" for="r-title">Title</label><input id="r-title" class="inp"></div>
+          <div><label class="lbl" for="r-text">Ingredients &amp; method</label><textarea id="r-text" rows="5" class="inp"></textarea></div>
+          <div><label class="lbl" for="r-link">Link (TikTok, YouTube, blog)</label><input id="r-link" class="inp" placeholder="https://"></div>
+          <div><label class="lbl" for="r-notes">Notes</label><input id="r-notes" class="inp"></div>
+          <div class="flex gap-2"><button id="r-save" class="btn">Save recipe</button><button id="r-cancel" type="button" class="btn2 hidden">Cancel edit</button></div>
+        </div>
+      </details>
+    </details>
+    <div id="r-list" class="space-y-3"></div>
+  </section>
+
+  <!-- ========== 4. MANAGE ALLERGENS ========== -->
+  <section id="p-manage" class="tabp hidden space-y-4">
+    <h2 class="hero">Your trigger list</h2>
+    <details id="m-box" class="card tint-lilac">
+      <summary id="m-title" class="h2 mb-0 cursor-pointer">Add a trigger</summary>
+      <div class="mt-3 grid gap-3 sm:grid-cols-2">
+        <div><label class="lbl" for="m-name">Name (English)</label><input id="m-name" class="inp"></div>
+        <div><label class="lbl" for="m-namevi">Name (Vietnamese)</label><input id="m-namevi" class="inp"></div>
+        <div><label class="lbl" for="m-cat">Category</label><select id="m-cat" class="inp"></select></div>
+        <div><label class="lbl" for="m-lvl">Status</label><select id="m-lvl" class="inp"></select></div>
+        <div><label class="lbl" for="m-alias">Other names (comma-separated)</label><input id="m-alias" class="inp" placeholder="e.g. cà chua, tomatoes"></div>
+      </div>
+      <label class="lbl mt-3" for="m-notes">Notes (what happened when you tested it?)</label>
+      <input id="m-notes" class="inp">
+      <div class="mt-3 flex gap-2"><button id="m-save" class="btn">Save trigger</button><button id="m-cancel" class="btn2 hidden">Cancel edit</button></div>
+    </details>
+    <details class="card tint-mist">
+      <summary class="h2 mb-0 cursor-pointer">Categories</summary>
+      <p class="mb-2 text-sm text-stone-600">Group your triggers and safe foods your own way. Rename, reorder or remove any category.</p>
+      <div id="c-list" class="divide-y divide-stone-100"></div>
+      <div class="mt-3 flex gap-2">
+        <input id="c-name" class="inp" placeholder="New category, e.g. Medications, Cosmetics, Fabrics" aria-label="New category name">
+        <button id="c-add" class="btn whitespace-nowrap">Add category</button>
+      </div>
+    </details>
+    <div id="m-list" class="space-y-4"></div>
+    <p class="px-2 text-xs leading-snug text-stone-600">Everything is saved in this browser only. Export a backup now and then. The starter list is a general guide, not medical advice; edit it to match your own reactions and check with your doctor.</p>
+  </section>
+</main>
+
+
+  </div>
+</div>
+<div id="dlg" class="fixed inset-0 z-50 hidden items-center justify-center bg-[#2A1D26]/40 p-4 backdrop-blur-sm" role="dialog" aria-modal="true">
+  <div class="card tint-rose w-full max-w-sm space-y-3">
+    <p id="dlg-msg" class="font-semibold"></p>
+    <input id="dlg-in" class="inp hidden" aria-label="Name">
+    <div class="flex justify-end gap-2"><button id="dlg-no" type="button" class="btn2">Cancel</button><button id="dlg-ok" type="button" class="btn">OK</button></div>
+  </div>
+</div>
+<div id="toast" class="pointer-events-none fixed bottom-24 left-1/2 md:bottom-5 hidden -translate-x-1/2 rounded-xl bg-[#432033] px-4 py-2 text-sm text-white shadow-lg" role="status"></div>
+
+<script>
+/* ---------- Constants ---------- */
+const LV = {
+  red:    {i:'🔴', t:'Severe / confirmed',      c:'bg-[#F4D0DC] text-[#6E1B3F] border-[#AF6384]',          m:'bg-[#EFB0C6]'},
+  yellow: {i:'🟡', t:'High histamine / moderate', c:'bg-[#F4E6C8] text-[#6B4E12] border-[#D9BE86]', m:'bg-[#EDD9A6]'},
+  blue:   {i:'🔵', t:'Untested / needs caution', c:'bg-[#DFD3EA] text-[#4A2F63] border-[#976D90]',       m:'bg-[#CDBBDD]'},
+  green:  {i:'🟢', t:'Safe / low histamine',     c:'bg-[#D3DBCB] text-[#323C31] border-[#8C9A80]',    m:'bg-[#BDC9B2]'}
+};
+const RANK = {red:0, yellow:1, blue:2, green:3};
+/* Default categories (id, name). Users can add, rename, reorder and delete them in Manage Allergens. */
+const DEFCATS = [['high','Dietary / high-histamine triggers'],['lib','Dietary / histamine liberators & cautions'],['food','Common food allergens'],['sea','Seafood allergens'],['latex','Latex-fruit cross-reactants'],['contact','Skin & contact irritants'],['cosm','Cosmetic & skincare ingredients'],['safe','Safe foods'],['other','Others']];
+const SKIN = ['Clear','Mild','Moderate','Strong','Severe flare'];
+const SKINC = ['bg-[#B5D99C] border-[#8DBB70]','bg-[#D6E58F] border-[#B3C45E]','bg-[#F3DE86] border-[#D9BE4A]','bg-[#EE9F6A] border-[#D17C45]','bg-[#C8403F] border-[#9E2B2B] text-white'];
+
+/* Starter database: [name, category, status, other names, note]. Everything is editable in the app. */
+const SEED = [
+  ['Fermented soy (chao)','hist','yellow','chao, miso, soy sauce, nuoc tuong, tempeh, natto, fermented tofu, fermented soy','Fermented = high histamine'],
+  ['Pickled vegetables (dưa chua)','hist','yellow','dua chua, dua muoi, pickle, pickled, kimchi, sauerkraut, cai chua','Fermented / pickled'],
+  ['Vinegar','hist','yellow','giam','Fermented; common in dressings'],
+  ['Aged cheese','hist','yellow','cheese, parmesan, cheddar, gouda, blue cheese','Aging raises histamine'],
+  ['Cured meats','hist','yellow','salami, ham, bacon, sausage, jerky, cha lua','Cured / processed'],
+  ['Spinach','hist','yellow','rau bina',''],
+  ['Eggplant','hist','yellow','aubergine, ca tim',''],
+  ['Tomato','hist','yellow','ca chua, ketchup, tomato paste, tomato sauce','Also a latex-fruit cross-reactant for some'],
+  ['Alcohol','hist','yellow','wine, beer, sake, ruou','Blocks histamine breakdown'],
+  ['Citrus','hist','blue','orange, lemon, lime, grapefruit, cam, chanh, quyt','Histamine liberator for some'],
+  ['Strawberry','hist','blue','dau tay',''],
+  ['Chocolate','hist','blue','cocoa, cacao, socola',''],
+  ['Nuts','hist','blue','walnut, cashew, peanut, almond, hat dieu, dau phong',''],
+  ['Leftovers','hist','blue','leftover, reheated','Histamine builds up as food sits'],
+  ['Shrimp','sea','red','prawn, tom, shrimp paste, mam tom',''],
+  ['Crab','sea','red','cua',''],
+  ['Fish','sea','red','salmon, tuna, anchovy, ca com, fish sauce, nuoc mam','Fish sauce counts too'],
+  ['Squid / octopus','sea','red','squid, octopus, cuttlefish, muc',''],
+  ['Shellfish','sea','red','oyster, clam, mussel, scallop, lobster, hau, ngao, so',''],
+  ['Banana','latex','blue','chuoi',''],
+  ['Avocado','latex','blue','',''],
+  ['Kiwi','latex','blue','kiwifruit',''],
+  ['Chestnut','latex','blue','hat de',''],
+  ['Papaya','latex','blue','du du',''],
+  ['Mango','latex','blue','xoai',''],
+  ['Passion fruit','latex','blue','chanh day',''],
+  ['Dish soap','contact','yellow','dishwashing liquid, detergent, nuoc rua chen','Wear gloves or rinse well'],
+  ['Lanolin','contact','yellow','wool wax, wool fat','Found in some moisturizers'],
+  ['Kapok (mủ gòn)','contact','yellow','mu gon, bong gon, kapok','Pillow / mattress filling'],
+  ['Latex','contact','yellow','rubber gloves, rubber, balloon',''],
+  ['Fragrance','contact','blue','perfume, scented, parfum',''],
+  ['Nickel','contact','blue','',''],
+  ['Zucchini','other','green','courgette, bi ngoi',''],
+  ['Rice','other','green','com, rice noodles, rice vermicelli, bun, banh pho, congee, chao trang',''],
+  ['Pumpkin','other','green','squash, bi do, butternut',''],
+  ['Carrot','other','green','ca rot',''],
+  ['Cabbage','other','green','bap cai, bok choy, cai thao',''],
+  ['Cucumber','other','green','dua leo',''],
+  ['Sweet potato','other','green','khoai lang',''],
+  ['Broccoli','other','green','bong cai',''],
+  ['Fresh herbs','other','green','mint, basil, cilantro, coriander, perilla, scallion, rau thom, rau ram, tia to, hanh la','Fresh, not dried'],
+  ['Fresh tofu','other','green','tofu, dau hu, tau hu','Fresh only; confirm for yourself'],
+  ['Coconut milk','other','green','coconut, nuoc cot dua',''],
+  ['Ginger','other','green','gung',''],
+  ['Olive oil','other','green','',''],
+  ['Quinoa','other','green','','']
+];
+/* v2 additions, researched from SIGHI-based low-histamine lists, MCAS trigger guides, eczema food-allergy studies and contact-dermatitis allergen lists.
+   Rows: [English name, category, status, other names (accents optional), note, Vietnamese name]. All editable in the app. */
+const SEED2 = [
+ ['Yogurt & fermented dairy','high','yellow','yogurt,yoghurt,kefir,buttermilk,sour cream,sua chua,sua len men','High in histamine','Sữa chua / sữa lên men'],
+ ['Sourdough bread','high','yellow','sourdough','High in histamine','Bánh mì men chua'],
+ ['Yeast extract','high','yellow','yeast,nutritional yeast,marmite,vegemite,men bia,nam men','High in histamine','Chiết xuất men / nấm men'],
+ ['Olives','high','yellow','olive','High in histamine','Ô liu'],
+ ['Canned & smoked foods','high','yellow','canned,tinned,smoked,do hop,xong khoi','High in histamine','Đồ hộp / đồ xông khói'],
+ ['Dried fruit','high','yellow','raisin,dried mango,dried apricot,nho kho,xoai say,trai cay say','High in histamine','Trái cây sấy khô'],
+ ['Coffee','lib','yellow','espresso,latte,cappuccino,caffeine,ca phe','Histamine liberator or DAO blocker','Cà phê'],
+ ['Black, green & mate tea','lib','yellow','black tea,green tea,mate,matcha,tra den,tra xanh','Histamine liberator or DAO blocker','Trà xanh / trà đen / trà mate'],
+ ['Chilli & hot spices','lib','yellow','chilli,chili,cayenne,paprika,chili powder,hot sauce,sriracha,ot bot','Histamine liberator or DAO blocker','Ớt / ớt bột'],
+ ['Cinnamon, clove & dried spices','lib','blue','cinnamon,clove,nutmeg,curry powder,star anise,hoa hoi,dinh huong,bot ca ri','Histamine liberator or DAO blocker','Quế / hoa hồi / đinh hương / bột cà ri'],
+ ['Mushrooms','lib','blue','mushroom,shiitake,enoki','Histamine liberator or DAO blocker','Nấm'],
+ ['Pineapple','lib','blue','ananas','Histamine liberator or DAO blocker','Dứa / quả thơm / trái thơm'],
+ ['Preservatives & MSG','lib','blue','sodium benzoate,benzoate,potassium sorbate,sorbic acid,sulfite,sulphite,sulfur dioxide,msg,monosodium glutamate,bot ngot,chat bao quan','Histamine liberator or DAO blocker','Chất bảo quản / bột ngọt'],
+ ['Legumes','lib','blue','beans,bean,lentil,lentils,chickpea,chickpeas,kidney bean,black bean,dau den,dau do,dau xanh,dau ha lan','Histamine liberator or DAO blocker','Các loại đậu hạt'],
+ ["Cow's milk & dairy",'food','blue',"cow's milk,cow milk,dairy,whole milk,fresh milk,casein,sua bo,sua tuoi",'Common eczema allergen','Sữa bò / sản phẩm từ sữa'],
+ ['Egg','food','blue','eggs,egg white,egg yolk,albumen,long trang','Common eczema allergen','Trứng'],
+ ['Wheat & gluten','food','blue','wheat,gluten,wheat flour,bread,pasta,bot mi,banh mi','Common eczema allergen','Lúa mì / gluten / bột mì'],
+ ['Soy','food','blue','soya,soybean,soybeans,soy milk,edamame,dau nanh,sua dau nanh','Common eczema allergen','Đậu nành / sữa đậu nành'],
+ ['Sesame','food','blue','tahini,me den,me trang,vung','Common eczema allergen','Mè / vừng'],
+ ['Isothiazolinone preservatives (MI/MCI)','cosm','yellow','methylisothiazolinone,methylchloroisothiazolinone,isothiazolinone,mci,kathon','Common contact allergen','Chất bảo quản isothiazolinone (MI/MCI)'],
+ ['Formaldehyde & releasers','cosm','yellow','formaldehyde,formalin,quaternium-15,dmdm hydantoin,imidazolidinyl urea,diazolidinyl urea,bronopol','Common contact allergen','Formaldehyde / chất giải phóng formaldehyde'],
+ ['Fragrance allergens','cosm','yellow','linalool,limonene,geraniol,citronellol,citral,eugenol,isoeugenol,coumarin,cinnamal,cinnamyl alcohol,hydroxycitronellal,benzyl salicylate,benzyl benzoate,farnesol,oakmoss,evernia prunastri,amyl cinnamal,hexyl cinnamal','Common contact allergen','Chất tạo mùi gây dị ứng'],
+ ['Balsam of Peru','cosm','yellow','myroxylon pereirae,peru balsam,balsam peru','Common contact allergen','Balsam Peru'],
+ ['Essential oils','cosm','yellow','essential oil,lavender oil,tea tree,melaleuca,ylang ylang,peppermint oil,eucalyptus oil,rose oil,tinh dau','Can trigger mast cells','Tinh dầu'],
+ ['Parabens','cosm','blue','paraben,methylparaben,propylparaben,butylparaben,ethylparaben','Can trigger mast cells','Paraben'],
+ ['Propylene glycol','cosm','yellow','','Common contact allergen','Propylene glycol'],
+ ['Cocamidopropyl betaine','cosm','yellow','capb','Common contact allergen','Cocamidopropyl betaine'],
+ ['Sulfate cleansers (SLS/SLES)','cosm','blue','sodium lauryl sulfate,sodium laureth sulfate,sls,sles,ammonium lauryl sulfate','Can trigger mast cells','Chất tẩy rửa sulfate (SLS/SLES)'],
+ ['Benzalkonium chloride','cosm','yellow','','Common contact allergen','Benzalkonium chloride'],
+ ['Drying alcohols','cosm','blue','alcohol denat,denatured alcohol,sd alcohol,isopropyl alcohol,ethanol,benzyl alcohol','Can trigger mast cells','Cồn / cồn khô da'],
+ ['Hair dye (PPD)','cosm','yellow','ppd,paraphenylenediamine,p-phenylenediamine,black henna,thuoc nhuom toc','Common contact allergen','Thuốc nhuộm tóc (PPD)'],
+ ['Acrylates (gel & false nails)','cosm','blue','acrylate,methacrylate,hema,gel nail,son gel,mong gia','Common contact allergen','Acrylate (sơn gel, móng giả)'],
+ ['Mineral oil','cosm','blue','paraffinum liquidum,liquid paraffin','Can trigger mast cells','Dầu khoáng'],
+ ['Synthetic dyes & colourants','cosm','blue','tartrazine,fd&c,ci 19140,ci 15985,colorant,colourant,artificial colour,artificial color,pham mau','Can trigger mast cells','Phẩm màu nhân tạo'],
+ ['Chemical sunscreen filters','cosm','blue','oxybenzone,benzophenone-3,benzophenone,avobenzone,octocrylene,octinoxate,homosalate','Common contact allergen','Màng lọc chống nắng hóa học'],
+ ['Topical antibiotics (neomycin, bacitracin, polymyxin)','contact','yellow','neomycin,bacitracin,polymyxin,thuoc mo khang sinh','Common contact allergen','Kháng sinh bôi (neomycin, bacitracin, polymyxin)'],
+ ['Gentle emollients','cosm','green','shea butter,butyrospermum parkii,beeswax,petrolatum,vaseline,glycerin,glycerine,squalane,ceramide,aloe vera,jojoba oil,rosehip oil,colloidal oatmeal,sap ong','Usually well tolerated; confirm for yourself','Dưỡng ẩm dịu nhẹ'],
+ ['Apple & pear','safe','green','apple,pear','','Táo / lê'],
+ ['Blueberry','safe','green','blueberries,cranberry,cranberries','','Việt quất'],
+ ['Watermelon & melon','safe','green','watermelon,cantaloupe,honeydew,melon,lychee,dua hau','','Dưa hấu / dưa lưới / vải'],
+ ['Cauliflower','safe','green','','','Bông cải trắng'],
+ ['Potato','safe','green','potatoes,khoai tay','','Khoai tây'],
+ ['Green beans, asparagus & celery','safe','green','green bean,green beans,asparagus,celery,dau que,mang tay,can tay','','Đậu que / măng tây / cần tây'],
+ ['Onion & garlic','safe','green','onion,onions,garlic,hanh tay','','Hành tây / tỏi'],
+ ['Oats & millet','safe','green','oat,oats,oatmeal,millet,yen mach','','Yến mạch / hạt kê'],
+ ['Coconut oil','safe','green','cocos nucifera oil,cocos nucifera','','Dầu dừa']
+];
+
+/* Curated starter recipes (low-histamine, vegetarian) */
+const BUILTIN = [
+  {id:'b1', tag:'Vietnamese', title:'Veggie broth phở chay',
+   text:'Broth: 1 daikon, 2 carrots, 1 onion, 1 thumb ginger, 1 cinnamon stick, 2 star anise, salt.\nSimmer everything in 2 L water for 45 min, strain.\nBowl: rice noodles (bánh phở), fresh tofu, bok choy, scallion, mint, cilantro.\nUse broth cooked the same day and season with salt only.'},
+  {id:'b2', tag:'Vietnamese', title:'Steamed tofu & courgette stew',
+   text:'Fresh tofu, zucchini, carrot, ginger, scallion, a little olive oil, salt, coconut milk.\nSimmer ginger and carrot in 300 ml water for 10 min, add zucchini and tofu cubes, cook 8 min, finish with a splash of coconut milk and scallion. Serve with rice.'},
+  {id:'b3', tag:'Vietnamese', title:'Fresh herbs noodle bowl (bún rau thơm)',
+   text:'Rice vermicelli, cucumber, lettuce, mint, perilla, basil, cilantro, fresh tofu, olive oil, ginger, salt.\nToss noodles with herbs and cucumber; pan-fry tofu in olive oil. Dress with grated ginger, salt and a little olive oil.'},
+  {id:'b4', tag:'Vietnamese', title:'Cháo chay (plain veggie congee)',
+   text:'Rice, pumpkin, carrot, ginger, scallion, salt.\nSimmer 1 cup rice with 7 cups water and diced pumpkin and carrot for 50 min until creamy. Top with scallion and fresh ginger. Eat the day it is cooked.'},
+  {id:'b5', tag:'Thai-style', title:'Pumpkin & coconut soup',
+   text:'Pumpkin, coconut milk, ginger, carrot, olive oil, salt, cilantro.\nSauté ginger in olive oil, add pumpkin and carrot with 500 ml water, simmer 20 min, blend with coconut milk, top with cilantro.'},
+  {id:'b6', tag:'Middle Eastern', title:'Herbed quinoa & roasted carrot bowl',
+   text:'Quinoa, carrot, zucchini, cucumber, mint, cilantro, olive oil, salt.\nRoast carrot and zucchini in olive oil at 200°C for 25 min. Toss with cooked quinoa, cucumber and chopped herbs.'},
+  {id:'b7', tag:'Indian-style', title:'Sweet potato & coconut stew',
+   text:'Sweet potato, broccoli, coconut milk, ginger, olive oil, salt, cilantro, rice.\nSimmer sweet potato and ginger in coconut milk and water for 20 min, add broccoli for 5 min. Serve over rice with cilantro.'},
+  {id:'b8', tag:'Indian-style', link:'https://tinandthyme.uk/2021/11/vegetable-curry/', title:'Mild vegetable curry',
+   text:'Carrot, sweet potato, zucchini, cauliflower, coconut milk, ginger, turmeric, olive oil, salt, rice, cilantro.\nSoften ginger and turmeric in olive oil, add carrot and sweet potato with a cup of water and cook 15 min, then add cauliflower and zucchini for 8 min. Stir in coconut milk and simmer 5 min. Serve over rice with cilantro. Cook fresh and eat the same day.'},
+  {id:'b9', tag:'European', link:'https://histaminikus.de/en/blogs/vegetarian?page=3', title:'Pumpkin & potato goulash',
+   text:'Pumpkin, potato, carrot, onion, olive oil, salt, fresh herbs.\nSweat chopped onion in olive oil, add carrot, potato and pumpkin cubes with just enough water to cover. Simmer 25 min until soft and thick, then season with salt and fresh herbs. Keep the seasoning simple.'},
+  {id:'b10', tag:'Middle Eastern', link:'https://nutriciously.com/low-histamine-recipes', title:'Quinoa & herb tabbouleh',
+   text:'Quinoa, cucumber, fresh parsley, mint, olive oil, salt.\nCook the quinoa and let it cool. Fold in diced cucumber, a big handful of chopped parsley and mint, olive oil and salt. Serve the same day.'},
+  {id:'b11', tag:'Thai-style', link:'https://nutriciously.com/low-histamine-recipes', title:'Basil coconut rice noodles',
+   text:'Rice noodles, coconut milk, fresh basil, zucchini, ginger, olive oil, salt.\nBlend coconut milk with a big handful of basil, a little ginger and salt into a sauce. Toss with cooked rice noodles and zucchini ribbons sautéed 2 min in olive oil.'},
+  {id:'b12', tag:'Middle Eastern', link:'https://www.rily.co/articles/15-low-histamine-recipes-for-better-health-149', title:'Roasted cauliflower with tahini dressing',
+   text:'Cauliflower, tahini, olive oil, ginger, salt, cilantro, water.\nRoast cauliflower florets with olive oil and salt at 200°C for 25 min. Whisk tahini with water, grated ginger and salt into a pourable dressing, drizzle over the cauliflower and top with cilantro.'},
+  {id:'b13', tag:'Vietnamese', title:'Chayote & carrot soup (canh su su)',
+   text:'Chayote (su su), carrot, ginger, scallion, salt, rice.\nSimmer sliced carrot and ginger in 1 L water for 10 min, add chayote wedges and cook 10 min more. Season with salt, finish with scallion and serve with rice.'},
+  {id:'b14', tag:'Vietnamese', title:'Fresh herb rolls (gỏi cuốn chay)',
+   text:'Rice paper, rice vermicelli, lettuce, cucumber, carrot, mint, basil, perilla, fresh tofu.\nSoften rice paper in warm water, fill with vermicelli, vegetables, herbs and tofu strips, then roll tightly. Dip in coconut milk whisked with grated ginger and a pinch of salt.'}
+];
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* Lower-case and strip Vietnamese accents; keeps string length so match positions line up */
+const fold = s => s.split('').map(c => (c === 'đ' || c === 'Đ') ? 'd' : c.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()).join('');
+const today = () => new Date().toLocaleDateString('en-CA');
+const badge = (lv, text) => `<span class="badge ${LV[lv].c}">${LV[lv].i} ${esc(T(text))}</span>`;
+function toast(msg) {
+  const t = $('toast'); t.textContent = T(msg); t.classList.remove('hidden');
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.add('hidden'), 2600);
+}
+
+/* ---------- Language: Vietnamese (default) / English ---------- */
+let LANG = 'vi';
+const VI_UI = {
+'Allergen, low-histamine & eczema diary':'Nhật ký dị ứng, ít histamine & chàm (eczema)',
+'Checker & Scanner':'Tra cứu & Quét','Daily Log':'Nhật ký hằng ngày','Recipe Library':'Thư viện công thức','Manage Allergens':'Quản lý dị nguyên',
+'Search an ingredient or irritant':'Tìm nguyên liệu hoặc chất kích ứng','Try: tomato, dưa chua, lanolin, mủ gòn…':'Thử: cà chua, tomato, lanolin, mủ gòn…',
+'Type a food, ingredient or skin irritant to see its status.':'Nhập tên món ăn, nguyên liệu hoặc chất kích ứng da để xem mức độ.','items in your list.':'mục trong danh sách của bạn.',
+'isn’t in your list yet.':'chưa có trong danh sách.','Add it as a new trigger':'Thêm làm chất mới',
+'Recipe & meal scanner':'Quét công thức & bữa ăn','Paste ingredients or describe a meal':'Dán nguyên liệu hoặc mô tả bữa ăn',
+'e.g. Rice noodles, tofu, eggplant, tomato broth, a splash of nước mắm…':'VD: bún, đậu hũ, cà tím, nước dùng cà chua, chút nước mắm…',
+'Scan for triggers':'Quét chất gây dị ứng','Paste some ingredients first.':'Hãy dán nguyên liệu trước.',
+'No known triggers found':'Không tìm thấy chất gây dị ứng nào','(but nothing on your list was recognised either)':'(và cũng không nhận ra mục nào trong danh sách của bạn)','Highest risk:':'Mức rủi ro cao nhất:',
+'Severe / confirmed':'Nặng / đã xác nhận','High histamine / moderate':'Nhiều histamine / vừa','Untested / needs caution':'Chưa thử / cần thận trọng','Safe / low histamine':'An toàn / ít histamine',
+'Add a diary entry':'Thêm nhật ký','Edit entry':'Sửa nhật ký','Date':'Ngày','Skin / flare status':'Tình trạng da / đợt bùng phát','1 = clear · 5 = severe flare':'1 = sạch da · 5 = bùng phát nặng',
+'What did you eat? Any new allergens?':'Bạn đã ăn gì? Có chất gây dị ứng mới không?','Breakfast, lunch, dinner, snacks, drinks…':'Sáng, trưa, tối, ăn vặt, đồ uống…','Notes (sleep, stress, new soap, weather…)':'Ghi chú (giấc ngủ, căng thẳng, xà phòng mới, thời tiết…)',
+'Save entry':'Lưu nhật ký','Cancel edit':'Hủy sửa','Save changes':'Lưu thay đổi','Clear':'Sạch da','Mild':'Nhẹ','Moderate':'Vừa','Strong':'Nhiều','Severe flare':'Bùng phát nặng','Skin':'Da',
+'⚠️ Heads up: this meal contains items from your trigger list':'⚠️ Lưu ý: bữa ăn này có món nằm trong danh sách chất gây dị ứng của bạn',
+'No entries yet. Log your first meal and skin rating above.':'Chưa có nhật ký. Hãy ghi bữa ăn và tình trạng da đầu tiên ở trên.','Edit':'Sửa','Delete':'Xóa','Rename':'Đổi tên','Move up':'Lên','Move down':'Xuống',
+'Saved. Flagged:':'Đã lưu. Cảnh báo:','Entry saved':'Đã lưu nhật ký','Add a meal, a skin rating or a note first.':'Hãy thêm bữa ăn, mức độ da hoặc ghi chú trước.','Delete this entry?':'Xóa nhật ký này?',
+'Recipe library':'Công thức nấu ăn','Hide recipes with 🔴 or 🟡 triggers from my list':'Ẩn công thức có chất 🔴 hoặc 🟡 trong danh sách của tôi','Also hide recipes with 🔵 cautions':'Ẩn cả công thức có chất 🔵 cần thận trọng',
+'Save my own recipe':'Lưu công thức của tôi','Title':'Tên món','Ingredients & method':'Nguyên liệu & cách làm','Link (TikTok, YouTube, blog)':'Liên kết (TikTok, YouTube, blog)','Notes':'Ghi chú','Save recipe':'Lưu công thức',
+'Open link':'Mở liên kết','Save a copy to edit':'Lưu bản sao để sửa','No flagged ingredients':'Không có nguyên liệu bị cảnh báo','Every recipe is hidden by your filters.':'Mọi công thức đều bị bộ lọc ẩn.',
+'recipe(s) hidden because of your triggers. Untick a filter to see them.':'công thức bị ẩn do chất gây dị ứng của bạn. Bỏ chọn bộ lọc để xem.',
+'Vietnamese':'Việt Nam','Thai-style':'Kiểu Thái','Middle Eastern':'Trung Đông','Indian-style':'Kiểu Ấn Độ','My recipe':'Của tôi',
+'Copied to My recipes':'Đã chép vào công thức của tôi','Delete this recipe?':'Xóa công thức này?','Give the recipe a title.':'Hãy đặt tên cho công thức.','Recipe saved':'Đã lưu công thức',
+'Add a trigger':'Thêm chất gây dị ứng','Edit trigger':'Sửa chất gây dị ứng','Name (English)':'Tên (tiếng Anh)','Name (Vietnamese)':'Tên (tiếng Việt)','Category':'Danh mục','Status':'Mức độ','Status of':'Mức độ của',
+'Other names (comma-separated)':'Tên gọi khác (cách nhau bằng dấu phẩy)','e.g. cà chua, tomatoes':'VD: tomatoes, cà chua','Notes (what happened when you tested it?)':'Ghi chú (phản ứng khi bạn thử?)','Save trigger':'Lưu',
+'Enter a name.':'Nhập tên.','Trigger saved':'Đã lưu','Status updated':'Đã cập nhật mức độ','Remove this from your list?':'Xóa mục này khỏi danh sách?',
+'Categories':'Các danh mục','Group your triggers and safe foods your own way. Rename, reorder or remove any category.':'Sắp xếp theo cách của bạn. Có thể đổi tên, đổi thứ tự hoặc xóa danh mục.',
+'New category, e.g. Medications, Cosmetics, Fabrics':'Danh mục mới, VD: Thuốc, Mỹ phẩm, Vải','New category name':'Tên danh mục mới','Add category':'Thêm danh mục','＋ New category…':'＋ Danh mục mới…',
+'Name for the new category:':'Tên danh mục mới:','Rename category:':'Đổi tên danh mục:','Keep at least one category.':'Cần giữ ít nhất một danh mục.','Enter a category name.':'Nhập tên danh mục.','Category added':'Đã thêm danh mục',
+'Nothing here yet. Pick this category when you add a trigger.':'Chưa có gì. Hãy chọn danh mục này khi thêm chất mới.',
+'Dietary / high-histamine triggers':'Thực phẩm / nhiều histamine','Dietary / histamine liberators & cautions':'Thực phẩm / kích thích histamine & cần thận trọng','Seafood allergens':'Hải sản gây dị ứng',
+'Latex-fruit cross-reactants':'Trái cây phản ứng chéo với latex','Skin & contact irritants':'Chất kích ứng da & tiếp xúc','Safe foods':'Thực phẩm an toàn','Others':'Khác',
+'Export backup (JSON)':'Xuất sao lưu (JSON)','Import backup (JSON)':'Nhập sao lưu (JSON)',
+'Everything is saved in this browser only. Export a backup now and then. The starter list is a general guide, not medical advice; edit it to match your own reactions and check with your doctor.':'Mọi dữ liệu chỉ lưu trong trình duyệt này. Hãy xuất bản sao lưu thỉnh thoảng. Danh sách mẫu chỉ mang tính tham khảo, không phải lời khuyên y tế; hãy chỉnh theo phản ứng của chính bạn và hỏi ý kiến bác sĩ.',
+'Replace everything in this browser with the backup?':'Thay toàn bộ dữ liệu trong trình duyệt này bằng bản sao lưu?','Backup imported':'Đã nhập bản sao lưu','That file isn’t a valid backup.':'Tệp này không phải bản sao lưu hợp lệ.','Could not save: browser storage is blocked.':'Không thể lưu: trình duyệt đang chặn bộ nhớ.',
+'Fermented = high histamine':'Lên men = nhiều histamine','Fermented / pickled':'Lên men / muối chua','Fermented; common in dressings':'Lên men; hay có trong nước trộn','Aging raises histamine':'Ủ càng lâu càng nhiều histamine','Cured / processed':'Muối / chế biến sẵn',
+'Also a latex-fruit cross-reactant for some':'Với một số người còn gây phản ứng chéo latex-trái cây','Blocks histamine breakdown':'Cản trở việc phân giải histamine','Histamine liberator for some':'Với một số người kích thích giải phóng histamine',
+'Histamine builds up as food sits':'Histamine tăng dần khi để lâu','Fish sauce counts too':'Nước mắm cũng tính','Wear gloves or rinse well':'Đeo găng hoặc tráng kỹ','Found in some moisturizers':'Có trong một số kem dưỡng ẩm',
+'Pillow / mattress filling':'Ruột gối / nệm','Fresh, not dried':'Tươi, không phải khô','Fresh only; confirm for yourself':'Chỉ dùng tươi; tự kiểm chứng',
+'What’s on your plate?':'Hôm nay bạn ăn gì?','How is your skin today?':'Da bạn hôm nay thế nào?','Gentle recipes':'Món ăn dịu nhẹ','Your trigger list':'Danh sách chất gây dị ứng','Backup':'Sao lưu','European':'Châu Âu',
+'How are you today?':'Hôm nay bạn thế nào?','Stress level':'Mức độ căng thẳng','1 = calm · 5 = very stressed':'1 = thư thái · 5 = rất căng thẳng','Stress':'Căng thẳng','Calm':'Thư thái','Low':'Thấp','High':'Cao','Very high':'Rất cao',
+'Add dishes from your recipes':'Thêm món từ thư viện công thức','Search your recipe library…':'Tìm trong thư viện công thức…','No matching recipe in your library.':'Không có công thức phù hợp trong thư viện.','Remove':'Bỏ',
+'Entry deleted':'Đã xóa nhật ký','Recipe deleted':'Đã xóa công thức','Hide recipes that contain:':'Ẩn công thức có chứa:','OK':'Đồng ý','Cancel':'Hủy','Name':'Tên',
+'Food & cosmetics scanner':'Quét thực phẩm & mỹ phẩm','Paste a food or cosmetic ingredient list, or describe a meal':'Dán danh sách thành phần thực phẩm hoặc mỹ phẩm, hoặc mô tả bữa ăn',
+'e.g. Rice noodles, tofu, tomato broth… or Aqua, Glycerin, Parfum, Linalool, Methylisothiazolinone…':'VD: bún, đậu hũ, nước dùng cà chua… hoặc Aqua, Glycerin, Parfum, Linalool, Methylisothiazolinone…',
+'Cosmetic & skincare ingredients':'Mỹ phẩm & thành phần chăm sóc da','Common food allergens':'Dị nguyên thực phẩm thường gặp',
+'High in histamine':'Nhiều histamine','Histamine liberator or DAO blocker':'Kích thích giải phóng histamine hoặc cản trở DAO','Common eczema allergen':'Dị nguyên thường gặp ở người bị chàm','Common contact allergen':'Chất gây viêm da tiếp xúc thường gặp','Can trigger mast cells':'Có thể kích hoạt tế bào mast','Usually well tolerated; confirm for yourself':'Thường dung nạp tốt; tự kiểm chứng',
+'Export backup':'Xuất sao lưu','Import backup':'Nhập sao lưu','Search':'Tra cứu','Log':'Nhật ký','Recipes':'Công thức','Triggers':'Chất dị ứng','Filters & my own recipes':'Bộ lọc & công thức của tôi','Diary':'Sổ nhật ký','Could not save the backup.':'Không thể lưu bản sao lưu.','Previous month':'Tháng trước','Next month':'Tháng sau','Skin trend this month':'Xu hướng da trong tháng','avg skin':'điểm da trung bình','days rated':'ngày có đánh giá','flare days (4–5)':'ngày bùng phát (4–5)','Dot = high stress (4–5)':'Chấm = căng thẳng cao (4–5)','Show all entries':'Xem tất cả nhật ký','No entries on this day. Add one above.':'Ngày này chưa có nhật ký. Hãy thêm ở trên.'
+};
+const VI_NAME = {'Fermented soy (chao)':'Đậu nành lên men / chao','Pickled vegetables (dưa chua)':'Rau củ muối chua / dưa chua','Vinegar':'Giấm','Aged cheese':'Phô mai ủ lâu năm','Cured meats':'Thịt muối / thịt nguội','Spinach':'Rau bina / cải bó xôi','Eggplant':'Cà tím','Tomato':'Cà chua','Alcohol':'Rượu bia','Citrus':'Cam quýt / chanh','Strawberry':'Dâu tây','Chocolate':'Sô cô la','Nuts':'Các loại hạt','Leftovers':'Đồ ăn thừa / hâm lại','Shrimp':'Tôm','Crab':'Cua','Fish':'Cá','Squid / octopus':'Mực / bạch tuộc','Shellfish':'Hải sản có vỏ / nghêu / sò / hàu','Banana':'Chuối','Avocado':'Bơ','Kiwi':'Kiwi','Chestnut':'Hạt dẻ','Papaya':'Đu đủ','Mango':'Xoài','Passion fruit':'Chanh dây','Dish soap':'Nước rửa chén','Lanolin':'Lanolin / mỡ lông cừu','Kapok (mủ gòn)':'Mủ gòn / bông gòn','Latex':'Mủ cao su / latex','Fragrance':'Hương liệu / nước hoa','Nickel':'Niken','Zucchini':'Bí ngòi','Rice':'Cơm / gạo','Pumpkin':'Bí đỏ','Carrot':'Cà rốt','Cabbage':'Bắp cải','Cucumber':'Dưa leo','Sweet potato':'Khoai lang','Broccoli':'Bông cải xanh','Fresh herbs':'Rau thơm tươi','Fresh tofu':'Đậu hũ tươi','Coconut milk':'Nước cốt dừa','Ginger':'Gừng','Olive oil':'Dầu ô liu','Quinoa':'Hạt diêm mạch / quinoa'};
+const VI_REC = {
+b1:{vt:'Phở chay nước dùng rau củ',vx:'Nước dùng: 1 củ cải trắng, 2 cà rốt, 1 củ hành, 1 khúc gừng, 1 thanh quế, 2 hoa hồi, muối.\nNấu tất cả với 2 lít nước trong 45 phút rồi lọc.\nTô: bánh phở, đậu hũ tươi, cải thìa, hành lá, bạc hà, ngò.\nDùng nước dùng nấu trong ngày, chỉ nêm muối.'},
+b2:{vt:'Đậu hũ hấp & bí ngòi hầm',vx:'Đậu hũ tươi, bí ngòi, cà rốt, gừng, hành lá, ít dầu ô liu, muối, nước cốt dừa.\nNấu gừng và cà rốt với 300 ml nước 10 phút, thêm bí ngòi và đậu hũ cắt miếng nấu 8 phút, cuối cùng thêm chút nước cốt dừa và hành lá. Ăn với cơm.'},
+b3:{vt:'Bún rau thơm',vx:'Bún, dưa leo, xà lách, bạc hà, tía tô, húng quế, ngò, đậu hũ tươi, dầu ô liu, gừng, muối.\nTrộn bún với rau thơm và dưa leo; chiên đậu hũ với dầu ô liu. Trộn thêm gừng nạo, muối và chút dầu ô liu.'},
+b4:{vt:'Cháo chay',vx:'Gạo, bí đỏ, cà rốt, gừng, hành lá, muối.\nNấu 1 chén gạo với 7 chén nước cùng bí đỏ và cà rốt cắt hạt lựu khoảng 50 phút cho sánh mịn. Rắc hành lá và gừng tươi. Nên ăn trong ngày nấu.'},
+b5:{vt:'Súp bí đỏ nước cốt dừa',vx:'Bí đỏ, nước cốt dừa, gừng, cà rốt, dầu ô liu, muối, ngò.\nPhi gừng với dầu ô liu, thêm bí đỏ và cà rốt cùng 500 ml nước, nấu 20 phút, xay nhuyễn với nước cốt dừa, rắc ngò.'},
+b6:{vt:'Tô quinoa rau thơm & cà rốt nướng',vx:'Quinoa, cà rốt, bí ngòi, dưa leo, bạc hà, ngò, dầu ô liu, muối.\nNướng cà rốt và bí ngòi với dầu ô liu ở 200°C trong 25 phút. Trộn với quinoa đã nấu chín, dưa leo và rau thơm cắt nhỏ.'},
+b7:{vt:'Khoai lang hầm nước cốt dừa',vx:'Khoai lang, bông cải xanh, nước cốt dừa, gừng, dầu ô liu, muối, ngò, cơm.\nNấu khoai lang và gừng với nước cốt dừa và nước 20 phút, thêm bông cải xanh 5 phút. Ăn với cơm, rắc ngò.'},
+b8:{vt:'Cà ri rau củ nhẹ',vx:'Cà rốt, khoai lang, bí ngòi, bông cải trắng, nước cốt dừa, gừng, nghệ, dầu ô liu, muối, cơm, ngò.\nPhi gừng và nghệ với dầu ô liu, cho cà rốt và khoai lang với 1 chén nước nấu 15 phút, thêm bông cải trắng và bí ngòi 8 phút. Cho nước cốt dừa vào nấu thêm 5 phút. Ăn với cơm và ngò. Nấu mới, ăn trong ngày.'},
+b9:{vt:'Bí đỏ khoai tây hầm kiểu Hungary',vx:'Bí đỏ, khoai tây, cà rốt, hành tây, dầu ô liu, muối, rau thơm tươi.\nPhi hành tây với dầu ô liu, thêm cà rốt, khoai tây và bí đỏ cắt khối với nước vừa ngập. Hầm 25 phút cho mềm sánh rồi nêm muối và rau thơm tươi. Giữ gia vị đơn giản.'},
+b10:{vt:'Tabbouleh quinoa rau thơm',vx:'Quinoa, dưa leo, mùi tây tươi, bạc hà, dầu ô liu, muối.\nNấu quinoa rồi để nguội. Trộn với dưa leo cắt hạt lựu, thật nhiều mùi tây và bạc hà cắt nhỏ, dầu ô liu và muối. Ăn trong ngày.'},
+b11:{vt:'Bún gạo nước cốt dừa húng quế',vx:'Bún gạo, nước cốt dừa, húng quế tươi, bí ngòi, gừng, dầu ô liu, muối.\nXay nước cốt dừa với một nắm húng quế, chút gừng và muối thành sốt. Trộn với bún đã luộc và bí ngòi bào sợi xào 2 phút với dầu ô liu.'},
+b12:{vt:'Bông cải trắng nướng sốt mè',vx:'Bông cải trắng, tahini (mè xay), dầu ô liu, gừng, muối, ngò, nước.\nNướng bông cải trắng với dầu ô liu và muối ở 200°C trong 25 phút. Đánh tahini với nước, gừng nạo và muối thành sốt lỏng, rưới lên bông cải và rắc ngò.'},
+b13:{vt:'Canh su su cà rốt',vx:'Su su, cà rốt, gừng, hành lá, muối, cơm.\nNấu cà rốt cắt lát và gừng trong 1 lít nước 10 phút, cho su su cắt miếng vào nấu thêm 10 phút. Nêm muối, rắc hành lá và ăn với cơm.'},
+b14:{vt:'Gỏi cuốn chay rau thơm',vx:'Bánh tráng, bún, xà lách, dưa leo, cà rốt, bạc hà, húng quế, tía tô, đậu hũ tươi.\nNhúng bánh tráng vào nước ấm cho mềm, cho bún, rau củ, rau thơm và đậu hũ cắt sợi vào rồi cuốn chặt. Chấm với nước cốt dừa đánh cùng gừng nạo và chút muối.'}
+};
+BUILTIN.forEach(b => Object.assign(b, VI_REC[b.id]));
+const EN_UI = Object.fromEntries(Object.entries(VI_UI).map(([k, v]) => [v, k]));
+const T = s => (LANG === 'vi' && VI_UI[s]) || s;
+const tr = s => (LANG === 'vi' ? VI_UI : EN_UI)[s];
+const dn = a => (LANG === 'vi' && a.nameVi) || a.name;                      /* display name in the current language */
+const alt = a => { const o = LANG === 'vi' ? a.name : a.nameVi; return o && o !== dn(a) ? o : ''; };  /* name in the other language */
+const lvl = k => `${LV[k].i} ${T(LV[k].t)}`;
+/* Translates every known string in the page (text, placeholders, aria-labels) in either direction */
+function applyLang() {
+  document.documentElement.lang = LANG;
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {acceptNode: n => n.parentNode.closest('script,style,textarea') ? NodeFilter.FILTER_SKIP : NodeFilter.FILTER_ACCEPT});
+  for (let n; (n = w.nextNode());) { const s = n.nodeValue.trim(), v = s && tr(s); if (v) n.nodeValue = n.nodeValue.replace(s, v); }
+  document.querySelectorAll('[placeholder],[aria-label]').forEach(el => ['placeholder', 'aria-label'].forEach(a => { const v = el.hasAttribute(a) && tr(el.getAttribute(a)); if (v) el.setAttribute(a, v); }));
+  const L = LANG === 'vi' ? 'English' : 'Tiếng Việt'; if ($('lang-t').textContent !== L) $('lang-t').textContent = L;
+}
+
+/* ---------- Storage ---------- */
+const KEY = 'skinplate.v1';
+/* Maps the older fixed categories (and the seed list) onto the new default ones */
+const oldCat = (c, l) => c === 'hist' ? (l === 'blue' ? 'lib' : 'high') : (c === 'other' && l === 'green') ? 'safe' : c;
+const mk = a => ({id: uid(), name: a[0], nameVi: VI_NAME[a[0]] || a[5] || '', cat: oldCat(a[1], a[2]), level: a[2], aliases: a[3], notes: a[4] || ''});
+/* Normalises stored / imported data; backups made before categories existed are upgraded here */
+function norm(d) {
+  const legacy = !Array.isArray(d.cats) || !d.cats.length;
+  const cats = legacy ? DEFCATS.map(([id, name]) => ({id, name})) : d.cats;
+  const allergens = d.allergens.map(a => { const c = legacy ? oldCat(a.cat, a.level) : a.cat; return {...a, nameVi: a.nameVi ?? (VI_NAME[a.name] || ''), cat: cats.some(x => x.id === c) ? c : cats[0].id}; });
+  if ((d.seedVer || 1) < 2) {   /* v2: add the researched items and categories to existing lists too */
+    [['food', 'sea'], ['cosm', 'contact']].forEach(([id, after]) => { if (!cats.some(c => c.id === id)) { const i = cats.findIndex(c => c.id === after); cats.splice(i >= 0 ? i + 1 : cats.length, 0, {id, name: DEFCATS.find(x => x[0] === id)[1]}); } });
+    const have = new Set(allergens.map(a => fold(a.name)));
+    SEED2.forEach(r => { if (!have.has(fold(r[0]))) { const a = mk(r); if (!cats.some(c => c.id === a.cat)) a.cat = cats[0].id; allergens.push(a); } });
+  }
+  return {cats, allergens, log: d.log || [], recipes: d.recipes || [], lang: d.lang, hide: d.hide, seedVer: 2};
+}
+let S = (() => {
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.allergens)) return norm(d); } catch (e) {}
+  return norm({allergens: SEED.map(mk)});
+})();
+const catName = id => (S.cats.find(c => c.id === id) || {name: 'Others'}).name;
+LANG = S.lang || 'vi';
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Could not save: browser storage is blocked.'); } }
+
+/* ---------- Scanner engine ---------- */
+/* Finds every trigger (name or alias) in free text. Longer terms win overlaps. */
+function scan(raw) {
+  const t = raw.normalize('NFC'), f = fold(t), used = new Array(f.length).fill(false), hits = [], terms = [];
+  S.allergens.forEach(a => {
+    const raws = [a.name, a.nameVi || '', ...a.aliases.split(',')].flatMap(x => x.replace(/\(.*?\)/g, '').split('/')).map(x => x.trim().toLowerCase()).filter(x => x.length > 1);
+    new Set(raws).forEach(x => terms.push([fold(x), a, x]));
+  });
+  terms.sort((x, y) => y[0].length - x[0].length);
+  terms.forEach(([w, a, raw]) => {
+    const re = new RegExp('(?<![a-z0-9])' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:e?s)?(?![a-z0-9])', 'g');
+    let m;
+    while ((m = re.exec(f))) {
+      const s = m.index, e = s + m[0].length;
+      if (used.slice(s, e).some(Boolean)) continue;
+      const seg = t.slice(s, e).toLowerCase();
+      if (w.length <= 3 && !seg.startsWith(raw)) continue;                          /* cá (fish) vs cà (eggplant) */
+      if (w.length === 4 && fold(seg) !== seg && !seg.startsWith(raw)) continue;    /* cháo (congee) vs chao (fermented tofu) */
+      for (let i = s; i < e; i++) used[i] = true;
+      hits.push({s, e, a});
+    }
+  });
+  hits.sort((x, y) => x.s - y.s);
+  return {t, hits};
+}
+const uniq = hits => [...new Map(hits.map(h => [h.a.id, h.a])).values()].sort((x, y) => RANK[x.level] - RANK[y.level]);
+function hl(t, hits) {
+  let out = '', p = 0;
+  hits.forEach(h => { out += esc(t.slice(p, h.s)) + `<mark class="rounded px-0.5 ${LV[h.a.level].m}" title="${esc(dn(h.a))}">${esc(t.slice(h.s, h.e))}</mark>`; p = h.e; });
+  return out + esc(t.slice(p));
+}
+const flagged = hits => uniq(hits).filter(a => a.level !== 'green');
+const chips = list => list.map(a => badge(a.level, dn(a))).join(' ');
+
+/* ---------- Tabs ---------- */
+function show(t) {
+  if (!$('p-' + t)) t = 'check';
+  window.scrollTo(0, 0);
+  document.querySelectorAll('.tabp').forEach(p => p.classList.toggle('hidden', p.id !== 'p-' + t));
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  try { history.replaceState(null, '', '#' + t); } catch (e) {}
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => show(b.dataset.tab));
+
+/* ---------- 1. Checker & Scanner ---------- */
+const rLegend = () => $('legend').innerHTML = Object.values(LV).map(l => `<div class="badge ${l.c} justify-start rounded-xl px-3 py-2 text-sm">${l.i} ${T(l.t)}</div>`).join('');
+
+function renderSearch() {
+  const q = fold($('q').value.trim()), out = $('q-out');
+  if (!q) { out.innerHTML = `<p class="text-sm text-stone-500">${T('Type a food, ingredient or skin irritant to see its status.')} ${S.allergens.length} ${T('items in your list.')}</p>`; return; }
+  const res = S.allergens.filter(a => fold(`${a.name} ${a.nameVi || ''} ${a.aliases} ${a.notes} ${catName(a.cat)}`).includes(q)).sort((x, y) => RANK[x.level] - RANK[y.level]);
+  if (!res.length) {
+    out.innerHTML = `<p class="text-sm">“${esc($('q').value.trim())}” ${T('isn’t in your list yet.')}</p><button class="btn2 mt-2" id="q-add">Add it as a new trigger</button>`;
+    $('q-add').onclick = () => { resetManage(); $('m-box').open = true; $('m-name').value = $('q').value.trim(); $('m-lvl').value = 'blue'; show('manage'); $('m-name').focus(); };
+    return;
+  }
+  out.innerHTML = res.map(a => `<div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-200 p-3">
+      <div><p class="font-semibold">${esc(dn(a))}${alt(a) ? ` <span class="font-normal text-stone-500">· ${esc(alt(a))}</span>` : ''}</p><p class="text-xs text-stone-500">${esc(T(catName(a.cat)))}${a.notes ? ' · ' + esc(T(a.notes)) : ''}</p></div>
+      ${badge(a.level, LV[a.level].t)}</div>`).join('');
+}
+$('q').oninput = renderSearch;
+
+$('scan-btn').onclick = () => {
+  const txt = $('scan-in').value.trim(), out = $('scan-out');
+  if (!txt) { out.innerHTML = '<p class="text-sm text-stone-500">Paste some ingredients first.</p>'; return; }
+  const {t, hits} = scan(txt), all = uniq(hits), bad = all.filter(a => a.level !== 'green');
+  const worst = bad[0] ? bad[0].level : null;
+  const verdict = !worst ? `<p class="font-semibold text-[#323C31]">🟢 ${T('No known triggers found')}${all.length ? '' : ' ' + T('(but nothing on your list was recognised either)')}.</p>`
+    : `<p class="font-semibold">${LV[worst].i} ${T('Highest risk:')} ${T(LV[worst].t)}</p>`;
+  out.innerHTML = `${verdict}
+    <div class="mt-2 whitespace-pre-wrap rounded-xl bg-white/60 p-3 text-sm leading-relaxed">${hl(t, hits)}</div>
+    <div class="mt-3 flex flex-wrap gap-1.5">${chips(all)}</div>
+    <ul class="mt-2 list-inside list-disc text-xs text-stone-600">${bad.filter(a => a.notes).map(a => `<li><b>${esc(dn(a))}:</b> ${esc(T(a.notes))}</li>`).join('')}</ul>`;
+};
+
+/* ---------- In-app dialogs (browsers and preview frames often block window.confirm / prompt) ---------- */
+const ui = (() => {
+  const box = $('dlg'), msg = $('dlg-msg'), inp = $('dlg-in'), ok = $('dlg-ok'), no = $('dlg-no'); let done = null;
+  const close = v => { box.classList.add('hidden'); box.classList.remove('flex'); const d = done; done = null; if (d) d(v); };
+  ok.onclick = () => close(inp.classList.contains('hidden') ? true : inp.value.trim());
+  no.onclick = () => close(inp.classList.contains('hidden') ? false : null);
+  box.onclick = e => { if (e.target === box) no.onclick(); };
+  box.onkeydown = e => { if (e.key === 'Escape') no.onclick(); if (e.key === 'Enter' && e.target === inp) ok.onclick(); };
+  const open = (m, withInput, val) => new Promise(res => { done = res; msg.textContent = T(m); inp.classList.toggle('hidden', !withInput); inp.value = val || ''; box.classList.remove('hidden'); box.classList.add('flex'); (withInput ? inp : ok).focus(); });
+  return {confirm: m => open(m, false), prompt: (m, v) => open(m, true, v)};
+})();
+
+/* ---------- Recipe helpers (shared by the diary and the library) ---------- */
+const allRecipes = () => [...BUILTIN.map(r => ({...r, built: true})), ...S.recipes];
+const findR = id => allRecipes().find(r => r.id === id);
+const rTitle = r => (r.built && LANG === 'vi' && r.vt) || r.title;
+const rBody = r => (r.built && LANG === 'vi' && r.vx) || r.text;
+const rFull = r => `${r.title} ${r.text} ${r.vx || ''}`;
+const mealText = (meal, ids) => (meal || '') + ' ' + (ids || []).map(findR).filter(Boolean).map(rFull).join(' ');
+const rChip = (id, attr) => { const r = findR(id); return r ? `<span class="badge gap-2 border-[#C9A0B5] bg-[#F3E4E8] text-[#432033]">🍲 ${esc(rTitle(r))}${attr ? `<button type="button" ${attr}="${id}" aria-label="Remove" class="font-bold">×</button>` : ''}</span>` : ''; };
+
+/* ---------- 2. Daily Log ---------- */
+const STRESS = ['Calm', 'Low', 'Moderate', 'High', 'Very high'];
+const STRC = ['bg-[#F1E6EF] border-[#D9C3D4]','bg-[#E4D0E0] border-[#C9A9C2]','bg-[#D2B4CC] border-[#B48CAB]','bg-[#976D90] border-[#7A5273] text-white','bg-[#6B3F65] border-[#4F2A4A] text-white'];
+const PICK = {skin: {labels: SKIN, cls: SKINC}, stress: {labels: STRESS, cls: STRC}};
+const pickCap = (k, v) => v ? `${v} = ${T(PICK[k].labels[v - 1])}` : T(k === 'skin' ? '1 = clear · 5 = severe flare' : '1 = calm · 5 = very stressed');
+const pickerHTML = (k, val, scope) => PICK[k].labels.map((n, i) => `<button type="button" data-pk="${k}" data-v="${i + 1}" data-scope="${scope}" aria-label="${i + 1}: ${T(n)}" aria-pressed="${val === i + 1}" class="h-10 w-10 rounded-xl border-2 text-sm font-bold ${val === i + 1 ? 'border-[#432033] bg-[#432033] text-white' : PICK[k].cls[i]}">${i + 1}</button>`).join('');
+let logVals = {skin: 0, stress: 0}, logRecipes = [], editInline = null, edv = null;
+const fmtDate = d => new Date(d + 'T00:00').toLocaleDateString(LANG === 'vi' ? 'vi-VN' : 'en-US', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'});
+function drawPickers() { ['skin', 'stress'].forEach(k => { $('l-' + k).innerHTML = pickerHTML(k, logVals[k], 'form'); $('l-' + k + '-t').textContent = pickCap(k, logVals[k]); }); }
+const drawChips = () => { $('l-rchips').innerHTML = logRecipes.map(id => rChip(id, 'data-rdrop')).join(''); };
+/* one handler for every 1-5 picker, in the form and in an entry being edited; click again to clear */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-pk]'); if (!b) return;
+  const k = b.dataset.pk, v = +b.dataset.v, o = b.dataset.scope === 'form' ? logVals : edv, c = b.parentElement;
+  o[k] = o[k] === v ? 0 : v; c.innerHTML = pickerHTML(k, o[k], b.dataset.scope); c.nextElementSibling.textContent = pickCap(k, o[k]);
+});
+function liveWarn() {
+  const f = flagged(scan(mealText($('l-meal').value, logRecipes)).hits);
+  $('l-warn').innerHTML = f.length ? `<div class="rounded-xl border border-[#AF6384]/50 bg-[#F6DDE6] p-3 text-sm"><p class="mb-1 font-semibold">⚠️ Heads up: this meal contains items from your trigger list</p><div class="flex flex-wrap gap-1.5">${chips(f)}</div></div>` : '';
+}
+$('l-meal').oninput = liveWarn;
+/* pick dishes from the recipe library: search, tap a result, it becomes a chip and is cross-checked too */
+function recipeSearch() {
+  const q = fold($('l-rq').value.trim()), out = $('l-rres');
+  const res = allRecipes().filter(r => !logRecipes.includes(r.id) && (!q || fold(`${r.title} ${r.vt || ''} ${rBody(r)}`).includes(q))).slice(0, 6);
+  out.innerHTML = res.length ? res.map(r => { const f = flagged(scan(rFull(r)).hits); return `<button type="button" data-radd="${r.id}" class="flex items-center justify-between gap-2 rounded-2xl border border-white/70 bg-white/70 p-3 text-left transition hover:bg-white hover:shadow-md"><span class="min-w-0"><span class="block truncate text-sm font-semibold">${esc(rTitle(r))}</span><span class="mt-1 flex flex-wrap gap-1">${f.length ? chips(f.slice(0, 3)) : badge('green', 'No flagged ingredients')}</span></span><span aria-hidden="true" class="text-xl font-bold text-[#432033]">＋</span></button>`; }).join('') : '<p class="text-sm text-stone-500 sm:col-span-2">No matching recipe in your library.</p>';
+}
+$('l-rq').oninput = $('l-rq').onfocus = recipeSearch;
+document.addEventListener('click', e => { if (!e.target.closest('#l-rq,#l-rres')) $('l-rres').innerHTML = ''; });
+$('l-rres').onclick = e => { const b = e.target.closest('[data-radd]'); if (!b) return; logRecipes.push(b.dataset.radd); $('l-rq').value = ''; $('l-rres').innerHTML = ''; drawChips(); liveWarn(); };
+$('l-rchips').onclick = e => { const b = e.target.closest('[data-rdrop]'); if (!b) return; logRecipes = logRecipes.filter(x => x !== b.dataset.rdrop); drawChips(); liveWarn(); };
+function resetLog() { logVals = {skin: 0, stress: 0}; logRecipes = []; $('l-date').value = today(); ['l-meal', 'l-notes', 'l-rq'].forEach(i => $(i).value = ''); $('l-rres').innerHTML = ''; $('l-warn').innerHTML = ''; drawPickers(); drawChips(); }
+$('l-save').onclick = () => {
+  const e = {id: uid(), date: $('l-date').value || today(), meal: $('l-meal').value.trim(), skin: logVals.skin, stress: logVals.stress, notes: $('l-notes').value.trim(), recipes: logRecipes.slice()};
+  if (!e.meal && !e.skin && !e.stress && !e.notes && !e.recipes.length) { toast('Add a meal, a skin rating or a note first.'); return; }
+  S.log.push(e); calMonth = new Date(e.date.slice(0, 7) + '-01T00:00'); if (calSel !== e.date) calSel = null;
+  const f = flagged(scan(mealText(e.meal, e.recipes)).hits); save(); resetLog(); renderLog();
+  toast(f.length ? `${T('Saved. Flagged:')} ${f.map(dn).join(', ')}` : 'Entry saved');
+};
+function readCard(e) {
+  const {t, hits} = scan(e.meal || ''), f = flagged(scan(mealText(e.meal, e.recipes)).hits);
+  return `<article class="card"><div class="flex flex-wrap items-center justify-between gap-2"><h3 class="font-bold">${esc(fmtDate(e.date))}</h3>
+    <div class="flex flex-wrap gap-1.5">${e.skin ? `<span class="badge ${SKINC[e.skin - 1]}">${T('Skin')} ${e.skin}/5 · ${T(SKIN[e.skin - 1])}</span>` : ''}${e.stress ? `<span class="badge ${STRC[e.stress - 1]}">${T('Stress')} ${e.stress}/5 · ${T(STRESS[e.stress - 1])}</span>` : ''}</div></div>
+    ${e.meal ? `<p class="mt-2 whitespace-pre-wrap text-sm">${hl(t, hits)}</p>` : ''}
+    ${(e.recipes || []).length ? `<div class="mt-2 flex flex-wrap gap-1.5">${e.recipes.map(id => rChip(id)).join('')}</div>` : ''}
+    ${f.length ? `<div class="mt-2 flex flex-wrap gap-1.5">${chips(f)}</div>` : ''}
+    ${e.notes ? `<p class="mt-2 text-sm text-stone-600">📝 ${esc(e.notes)}</p>` : ''}
+    <div class="mt-3 flex gap-2"><button class="btn2" data-edit="${e.id}">Edit</button><button class="btn2" data-del="${e.id}">Delete</button></div></article>`;
+}
+/* the entry edits in place, right where it sits in the list */
+function editCard(e) {
+  const pk = (k, l) => `<div><span class="lbl">${l}</span><div class="flex gap-1.5">${pickerHTML(k, edv[k], 'edit')}</div><p class="mt-1 text-xs text-stone-500">${pickCap(k, edv[k])}</p></div>`;
+  return `<article class="card tint-gild" data-ecard="${e.id}"><div class="grid gap-3 sm:grid-cols-2">
+    <div><span class="lbl">Date</span><input type="date" class="inp" data-f="date" value="${esc(edv.date)}" aria-label="Date"></div>${pk('skin', 'Skin / flare status')}${pk('stress', 'Stress level')}</div>
+    <span class="lbl mt-3">What did you eat? Any new allergens?</span><textarea rows="3" class="inp" data-f="meal" aria-label="Name">${esc(edv.meal)}</textarea>
+    <div class="mt-2 flex flex-wrap gap-2">${edv.recipes.map(id => rChip(id, 'data-edrop')).join('')}</div>
+    <span class="lbl mt-3">Notes (sleep, stress, new soap, weather…)</span><textarea rows="2" class="inp" data-f="notes" aria-label="Notes">${esc(edv.notes)}</textarea>
+    <div class="mt-3 flex gap-2"><button class="btn" data-esave="1">Save changes</button><button class="btn2" data-ecancel="1">Cancel</button></div></article>`;
+}
+function renderLog() {
+  const L = [...S.log].filter(e => !calSel || e.date === calSel).sort((a, b) => b.date.localeCompare(a.date));
+  $('l-filter').innerHTML = calSel ? `<div class="flex flex-wrap items-center gap-2"><span class="badge border-[#432033] bg-[#432033] px-3 py-1.5 text-sm text-white">📅 ${esc(fmtDate(calSel))}</span><button id="l-fclear" type="button" class="btn2">Show all entries</button></div>` : '';
+  $('l-list').innerHTML = L.length ? L.map(e => e.id === editInline ? editCard(e) : readCard(e)).join('') : `<div class="card text-sm text-stone-500">${T(calSel ? 'No entries on this day. Add one above.' : 'No entries yet. Log your first meal and skin rating above.')}</div>`;
+  $('diary-n').textContent = S.log.length ? `(${S.log.length})` : '';
+  renderCal();
+}
+const grabEdit = () => { const c = document.querySelector('[data-ecard]'); if (c) c.querySelectorAll('[data-f]').forEach(i => edv[i.dataset.f] = i.value); };
+$('l-list').addEventListener('click', async ev => {
+  const b = ev.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (d.edit) { const e0 = S.log.find(x => x.id === d.edit); editInline = e0.id; edv = {date: e0.date, meal: e0.meal || '', notes: e0.notes || '', skin: e0.skin || 0, stress: e0.stress || 0, recipes: (e0.recipes || []).slice()}; renderLog(); }
+  else if (d.del) { if (await ui.confirm('Delete this entry?')) { S.log = S.log.filter(x => x.id !== d.del); if (editInline === d.del) { editInline = null; edv = null; } save(); renderLog(); toast('Entry deleted'); } }
+  else if (d.edrop) { grabEdit(); edv.recipes = edv.recipes.filter(x => x !== d.edrop); renderLog(); }
+  else if (d.ecancel) { editInline = null; edv = null; renderLog(); }
+  else if (d.esave) { grabEdit(); const e0 = S.log.find(x => x.id === editInline); Object.assign(e0, {date: edv.date || e0.date, meal: edv.meal.trim(), notes: edv.notes.trim(), skin: edv.skin, stress: edv.stress, recipes: edv.recipes}); editInline = null; edv = null; save(); renderLog(); toast('Entry saved'); }
+});
+
+/* ---------- Skin calendar: each day is coloured by the highest skin / flare rating logged that day ---------- */
+const SKINHEX = ['#B5D99C', '#D6E58F', '#F3DE86', '#EE9F6A', '#C8403F'];
+let calMonth = new Date(); calMonth.setDate(1); let calSel = null;
+const ymd = (y, m, d) => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+function dayInfo(date) { const es = S.log.filter(e => e.date === date); return es.length ? {skin: Math.max(0, ...es.map(e => e.skin || 0)), stress: Math.max(0, ...es.map(e => e.stress || 0))} : null; }
+function renderCal() {
+  const y = calMonth.getFullYear(), m = calMonth.getMonth(), loc = LANG === 'vi' ? 'vi-VN' : 'en-US', days = new Date(y, m + 1, 0).getDate(), t = today(), vals = [];
+  $('cal-title').textContent = calMonth.toLocaleDateString(loc, {month: 'long', year: 'numeric'});
+  let grid = [0, 1, 2, 3, 4, 5, 6].map(i => `<span class="py-1 font-semibold text-[#432033]/60">${new Date(2024, 0, 1 + i).toLocaleDateString(loc, {weekday: 'narrow'})}</span>`).join('') + '<span></span>'.repeat((new Date(y, m, 1).getDay() + 6) % 7), bars = '';
+  for (let d = 1; d <= days; d++) {
+    const date = ymd(y, m, d), info = dayInfo(date), sk = info ? info.skin : 0; if (sk) vals.push(sk);
+    const bg = sk ? SKINHEX[sk - 1] : info ? '#FFFFFF' : 'rgba(255,255,255,.45)';
+    grid += `<button type="button" data-day="${date}" aria-label="${esc(fmtDate(date))}${sk ? ': ' + T(SKIN[sk - 1]) : ''}" class="relative mx-auto grid aspect-square w-full max-w-[64px] place-items-center rounded-full text-sm font-semibold transition hover:scale-110 sm:text-base lg:text-xs ${sk >= 5 ? 'text-white' : 'text-[#2A1D26]'} ${date === calSel ? 'ring-2 ring-[#432033] ring-offset-2 ring-offset-[#E3D2E1]' : date === t ? 'ring-2 ring-[#AF6384]' : ''}" style="background:${bg}">${d}${info && info.stress >= 4 ? '<i class="absolute bottom-[3px] h-1 w-1 rounded-full bg-[#976D90] ring-1 ring-white"></i>' : ''}</button>`;
+    bars += `<span title="${d}" class="flex-1 rounded-t-full" style="height:${sk ? sk * 20 : 5}%;background:${sk ? SKINHEX[sk - 1] : 'rgba(67,32,51,.14)'}"></span>`;
+  }
+  $('cal-grid').innerHTML = grid; $('cal-bars').innerHTML = bars;
+  const flare = vals.filter(v => v >= 4).length, avg = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1) : '–';
+  $('cal-stats').innerHTML = `<b class="text-xl">${avg}</b> <span class="text-[#2A1D26]/70">${T('avg skin')} · ${vals.length} ${T('days rated')} · ${flare} ${T('flare days (4–5)')}</span>`;
+  $('cal-legend').innerHTML = SKIN.map((n, i) => `<span class="inline-flex items-center gap-1"><i class="h-3 w-3 rounded-full" style="background:${SKINHEX[i]}"></i>${T(n)}</span>`).join('') + `<span class="inline-flex items-center gap-1"><i class="h-1.5 w-1.5 rounded-full bg-[#976D90]"></i>${T('Dot = high stress (4–5)')}</span>`;
+}
+$('cal-prev').onclick = () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1); renderCal(); };
+$('cal-next').onclick = () => { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1); renderCal(); };
+$('cal-grid').onclick = e => { const b = e.target.closest('[data-day]'); if (!b) return; calSel = calSel === b.dataset.day ? null : b.dataset.day; if (calSel) { $('l-date').value = calSel; $('diary').open = true; } renderCal(); renderLog(); };
+$('l-filter').onclick = e => { if (e.target.closest('#l-fclear')) { calSel = null; renderCal(); renderLog(); } };
+
+/* ---------- 3. Recipes ---------- */
+const safeUrl = u => /^https?:\/\//i.test(u) ? u : '';
+S.hide = S.hide || {red: true, yellow: true, blue: false};
+let editR = null;
+function renderFilter() {
+  $('f-chips').innerHTML = ['red', 'yellow', 'blue'].map(k => `<button type="button" data-hide="${k}" aria-pressed="${!!S.hide[k]}" class="badge cursor-pointer px-3 py-1.5 text-sm transition ${S.hide[k] ? 'border-[#432033] bg-[#432033] text-white' : 'border-white bg-white/80 text-[#432033]'}">${S.hide[k] ? '✓ ' : ''}${lvl(k)}</button>`).join('');
+}
+$('f-chips').onclick = e => { const b = e.target.closest('[data-hide]'); if (!b) return; S.hide[b.dataset.hide] = !S.hide[b.dataset.hide]; save(); renderRecipes(); };
+function renderRecipes() {
+  renderFilter(); let hidden = 0;
+  const cards = allRecipes().map(r => {
+    const f = flagged(scan(rFull(r)).hits);
+    if (f.some(a => S.hide[a.level])) { hidden++; return ''; }
+    const link = safeUrl(r.link || '');
+    return `<article class="card"><h3 class="text-base font-bold">${esc(rTitle(r))}</h3>
+      <p class="mt-2 whitespace-pre-wrap text-sm leading-relaxed">${esc(rBody(r))}</p>
+      ${link ? `<p class="mt-2 text-sm"><a class="font-semibold text-[#432033] underline" href="${esc(link)}" target="_blank" rel="noopener noreferrer">Open link</a></p>` : ''}
+      ${r.notes ? `<p class="mt-2 text-sm text-stone-600">📝 ${esc(r.notes)}</p>` : ''}
+      <div class="mt-3 flex flex-wrap items-center gap-1.5">${f.length ? chips(f) : badge('green', 'No flagged ingredients')}</div>
+      <div class="mt-3 flex gap-2">${r.built ? `<button class="btn2" data-copy="${r.id}">Save a copy to edit</button>` : `<button class="btn2" data-redit="${r.id}">Edit</button><button class="btn2" data-rdel="${r.id}">Delete</button>`}</div></article>`;
+  }).join('');
+  $('r-list').innerHTML = (hidden ? `<p class="text-sm text-stone-600">${hidden} ${T('recipe(s) hidden because of your triggers. Untick a filter to see them.')}</p>` : '') + (cards || '<div class="card text-sm text-stone-500">Every recipe is hidden by your filters.</div>');
+}
+function resetR() { editR = null; ['r-title', 'r-text', 'r-link', 'r-notes'].forEach(i => $(i).value = ''); $('r-save').textContent = 'Save recipe'; $('r-cancel').classList.add('hidden'); }
+$('r-cancel').onclick = resetR;
+$('r-list').addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (d.copy) { const r = findR(d.copy), vi = LANG === 'vi'; S.recipes.push({id: uid(), title: vi ? r.vt : r.title, text: vi ? r.vx : r.text, link: r.link || '', notes: ''}); save(); renderRecipes(); toast('Copied to My recipes'); }
+  else if (d.rdel) { if (await ui.confirm('Delete this recipe?')) { S.recipes = S.recipes.filter(x => x.id !== d.rdel); if (editR === d.rdel) resetR(); save(); renderRecipes(); toast('Recipe deleted'); } }
+  else if (d.redit) { const r = S.recipes.find(x => x.id === d.redit); editR = r.id; $('r-title').value = r.title; $('r-text').value = r.text; $('r-link').value = r.link || ''; $('r-notes').value = r.notes || ''; $('r-save').textContent = 'Save changes'; $('r-cancel').classList.remove('hidden'); $('r-box').open = true; $('r-form').open = true; $('r-form').scrollIntoView({behavior: 'smooth', block: 'center'}); }
+});
+$('r-save').onclick = () => {
+  const r = {id: editR || uid(), title: $('r-title').value.trim(), text: $('r-text').value.trim(), link: $('r-link').value.trim(), notes: $('r-notes').value.trim()};
+  if (!r.title) { toast('Give the recipe a title.'); return; }
+  const i = S.recipes.findIndex(x => x.id === r.id); i >= 0 ? S.recipes[i] = r : S.recipes.push(r);
+  save(); resetR(); renderRecipes(); toast('Recipe saved');
+};
+
+/* ---------- 4. Manage allergens ---------- */
+let lastCat = '';
+function fillCats() {
+  const v = $('m-cat').value;
+  $('m-cat').innerHTML = S.cats.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('') + '<option value="__new">＋ New category…</option>';
+  $('m-cat').value = S.cats.some(c => c.id === v) ? v : S.cats[0].id;
+  lastCat = $('m-cat').value;
+}
+$('m-cat').onchange = async () => {
+  if ($('m-cat').value === '__new') {
+    const n = ((await ui.prompt('Name for the new category:')) || '').trim();
+    if (n) { const id = uid(); S.cats.push({id, name: n}); save(); renderAll(); $('m-cat').value = id; }
+    else $('m-cat').value = lastCat;
+  }
+  lastCat = $('m-cat').value;
+};
+function fillLvl() { const v = $('m-lvl').value || 'yellow'; $('m-lvl').innerHTML = Object.keys(LV).map(k => `<option value="${k}">${lvl(k)}</option>`).join(''); $('m-lvl').value = v; }
+let editA = null;
+function resetManage() { editA = null; ['m-name', 'm-namevi', 'm-alias', 'm-notes'].forEach(i => $(i).value = ''); $('m-cat').value = S.cats[0].id; $('m-lvl').value = 'yellow'; $('m-title').textContent = 'Add a trigger'; $('m-save').textContent = 'Save trigger'; $('m-cancel').classList.add('hidden'); }
+$('m-cancel').onclick = resetManage;
+$('m-save').onclick = () => {
+  const en = $('m-name').value.trim(), vi = $('m-namevi').value.trim(), a = {id: editA || uid(), name: en || vi, nameVi: vi, cat: $('m-cat').value, level: $('m-lvl').value, aliases: $('m-alias').value.trim(), notes: $('m-notes').value.trim()};
+  if (!a.name) { toast('Enter a name.'); return; }
+  const i = S.allergens.findIndex(x => x.id === a.id);
+  i >= 0 ? S.allergens[i] = a : S.allergens.push(a);
+  save(); resetManage(); renderAll(); toast('Trigger saved');
+};
+function renderManage() {
+  $('m-list').innerHTML = S.cats.map(({id: k, name}) => {
+    const label = esc(name);
+    const items = S.allergens.filter(a => a.cat === k).sort((x, y) => RANK[x.level] - RANK[y.level] || dn(x).localeCompare(dn(y)));
+    if (!items.length) return `<div class="card"><h3 class="mb-1 font-bold text-[#432033]">${label}</h3><p class="text-sm text-stone-500">Nothing here yet. Pick this category when you add a trigger.</p></div>`;
+    return `<div class="card"><h3 class="mb-2 font-bold text-[#432033]">${label}</h3><div class="divide-y divide-stone-100">${items.map(a => `
+      <div class="flex flex-wrap items-center gap-2 py-2">
+        <div class="min-w-0 flex-1"><p class="text-sm font-semibold">${esc(dn(a))}${alt(a) ? ` <span class="font-normal text-stone-500">· ${esc(alt(a))}</span>` : ''}</p>${a.notes ? `<p class="text-xs text-stone-500">${esc(a.notes)}</p>` : ''}</div>
+        <select class="inp !w-auto !py-1" data-lvl="${a.id}" aria-label="${T('Status of')} ${esc(dn(a))}">${Object.keys(LV).map(lk => `<option value="${lk}" ${lk === a.level ? 'selected' : ''}>${lvl(lk)}</option>`).join('')}</select>
+        <button class="btn2" data-aedit="${a.id}">Edit</button><button class="btn2" data-adel="${a.id}">Delete</button></div>`).join('')}</div></div>`;
+  }).join('');
+  $('m-list').querySelectorAll('[data-lvl]').forEach(s => s.onchange = () => { S.allergens.find(x => x.id === s.dataset.lvl).level = s.value; save(); renderAll(); toast('Status updated'); });
+  $('m-list').querySelectorAll('[data-aedit]').forEach(b => b.onclick = () => {
+    const a = S.allergens.find(x => x.id === b.dataset.aedit); editA = a.id;
+    $('m-name').value = a.name; $('m-namevi').value = a.nameVi || ''; $('m-cat').value = a.cat; $('m-lvl').value = a.level; $('m-alias').value = a.aliases; $('m-notes').value = a.notes;
+    $('m-box').open = true; $('m-title').textContent = 'Edit trigger'; $('m-save').textContent = 'Save changes'; $('m-cancel').classList.remove('hidden'); window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+  $('m-list').querySelectorAll('[data-adel]').forEach(b => b.onclick = async () => { if (await ui.confirm('Remove this from your list?')) { S.allergens = S.allergens.filter(x => x.id !== b.dataset.adel); save(); renderAll(); } });
+}
+
+/* ---------- Backup ---------- */
+$('exp').onclick = async () => {
+  setBk(false);
+  const json = JSON.stringify({app: 'skinplate', version: 1, ...S}, null, 2), name = `tofote-backup-${today()}.json`;
+  /* On the hosted page a plain download link is inert, so the viewer's save dialog is used; opened as a local file it falls back to a normal download */
+  const dl = window.claude && claude.use ? await claude.use('downloads') : null;
+  if (dl) { try { await dl.save({filename: name, data: json}); } catch (e) { if (!e || e.code !== 'declined') toast('Could not save the backup.'); } return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([json], {type: 'application/json'}));
+  a.download = name; a.click(); URL.revokeObjectURL(a.href);
+};
+$('imp').onclick = () => { setBk(false); $('imp-file').click(); };
+$('imp-file').onchange = ev => {
+  const file = ev.target.files[0]; if (!file) return;
+  const rd = new FileReader();
+  rd.onload = async () => {
+    try {
+      const d = JSON.parse(rd.result);
+      if (!Array.isArray(d.allergens)) throw new Error('bad file');
+      if (!(await ui.confirm('Replace everything in this browser with the backup?'))) return;
+      S = norm(d); save(); renderAll(); toast('Backup imported');
+    } catch (e) { toast('That file isn’t a valid backup.'); }
+  };
+  rd.readAsText(file); ev.target.value = '';
+};
+
+/* ---------- Init ---------- */
+/* Category manager: add, rename, reorder, delete (triggers in a deleted category move to "Others" or the first other category) */
+function renderCats() {
+  $('c-list').innerHTML = S.cats.map((c, i) => `<div class="flex flex-wrap items-center gap-2 py-2">
+    <span class="min-w-0 flex-1 text-sm font-semibold">${esc(T(c.name))} <span class="font-normal text-stone-500">(${S.allergens.filter(a => a.cat === c.id).length})</span></span>
+    <button class="btn2 disabled:opacity-40" data-cup="${c.id}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>↑</button>
+    <button class="btn2 disabled:opacity-40" data-cdn="${c.id}" aria-label="Move down" ${i === S.cats.length - 1 ? 'disabled' : ''}>↓</button>
+    <button class="btn2" data-cren="${c.id}">Rename</button>
+    <button class="btn2" data-cdel="${c.id}">Delete</button></div>`).join('');
+  const move = (id, d) => { const i = S.cats.findIndex(c => c.id === id), j = i + d; [S.cats[i], S.cats[j]] = [S.cats[j], S.cats[i]]; save(); renderAll(); };
+  $('c-list').querySelectorAll('[data-cup]').forEach(b => b.onclick = () => move(b.dataset.cup, -1));
+  $('c-list').querySelectorAll('[data-cdn]').forEach(b => b.onclick = () => move(b.dataset.cdn, 1));
+  $('c-list').querySelectorAll('[data-cren]').forEach(b => b.onclick = async () => {
+    const c = S.cats.find(x => x.id === b.dataset.cren), n = ((await ui.prompt('Rename category:', T(c.name))) || '').trim();
+    if (n) { c.name = n; save(); renderAll(); }
+  });
+  $('c-list').querySelectorAll('[data-cdel]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.cdel, c = S.cats.find(x => x.id === id);
+    if (S.cats.length < 2) { toast('Keep at least one category.'); return; }
+    const to = S.cats.find(x => x.id === 'other' && x.id !== id) || S.cats.find(x => x.id !== id);
+    const n = S.allergens.filter(a => a.cat === id).length;
+    const vn = LANG === 'vi', cn = T(c.name), tn = T(to.name);
+    if (!(await ui.confirm(vn ? (n ? `Xóa “${cn}”? ${n} mục sẽ chuyển sang “${tn}”.` : `Xóa “${cn}”?`) : (n ? `Delete “${cn}”? Its ${n} item${n > 1 ? 's' : ''} will move to “${tn}”.` : `Delete “${cn}”?`)))) return;
+    S.allergens.forEach(a => { if (a.cat === id) a.cat = to.id; });
+    S.cats = S.cats.filter(x => x.id !== id); save(); renderAll();
+  });
+}
+$('c-add').onclick = () => {
+  const n = $('c-name').value.trim();
+  if (!n) { toast('Enter a category name.'); return; }
+  S.cats.push({id: uid(), name: n}); $('c-name').value = ''; save(); renderAll(); toast('Category added');
+};
+$('c-name').onkeydown = e => { if (e.key === 'Enter') $('c-add').click(); };
+
+function renderAll() { fillCats(); fillLvl(); rLegend(); drawPickers(); renderCats(); renderSearch(); renderLog(); renderRecipes(); renderManage(); liveWarn(); }
+/* Sidebar opens while hovered or keyboard-focused; the backup popover closes on outside click */
+const side = $('side'); let hov = false;
+const upd = () => side.classList.toggle('open', hov || !!side.querySelector(':focus-visible'));
+let tm; side.onmouseenter = () => { clearTimeout(tm); hov = true; upd(); }; side.onmouseleave = () => { clearTimeout(tm); tm = setTimeout(() => { hov = false; upd(); }, 140); };
+side.addEventListener('focusin', upd); side.addEventListener('focusout', () => setTimeout(upd));
+/* Backup: one button that opens into Export / Import */
+function setBk(on) { $('bk-sub').classList.toggle('hidden', !on); $('bk-sub').classList.toggle('flex', on); $('bk-btn').setAttribute('aria-expanded', on); }
+$('bk-btn').onclick = () => setBk($('bk-btn').getAttribute('aria-expanded') !== 'true');
+document.addEventListener('click', e => { if (!e.target.closest('#bk-wrap')) setBk(false); });
+/* Language and Backup live in the sidebar on wide screens and in a top bar on phones */
+const wide = matchMedia('(min-width:768px)');
+const placeTools = () => (wide.matches ? $('side') : $('top-tools')).appendChild($('tools'));
+wide.addEventListener('change', placeTools); placeTools();
+$('lang').onclick = () => { LANG = LANG === 'vi' ? 'en' : 'vi'; S.lang = LANG; save(); renderAll(); applyLang(); };
+/* Re-translate whenever the page re-renders a list */
+new MutationObserver(() => { clearTimeout(applyLang.h); applyLang.h = setTimeout(applyLang, 0); }).observe(document.body, {childList: true, subtree: true});
+fillCats(); resetLog(); resetManage(); renderAll(); applyLang();
+show(location.hash.slice(1) || 'check');
+</script>
+</body>
+</html>
